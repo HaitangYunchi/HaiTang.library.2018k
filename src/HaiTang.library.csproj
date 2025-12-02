@@ -1,0 +1,65 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackageId>$(AssemblyName).2018k</PackageId>
+    <Title>$(AssemblyName).2018k</Title>
+    <Version>1.3.7</Version>
+    <Authors>HaiTangYunchi</Authors>
+    <Product>$(AssemblyName).2018k</Product>
+    <Description>提供与软件更新、用户管理、卡密验证、云变量操作等相关的 API 封装方法。
+支持多 API 地址故障转移、健康检测、加密解密等功能。</Description>
+    <PackageIcon>update.png</PackageIcon>
+    <PackageLicenseFile>License.txt</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <IncludeSymbols>False</IncludeSymbols>
+    <SymbolPackageFormat>symbols.nupkg</SymbolPackageFormat>
+    <RepositoryUrl>https://gitee.com/haitangyunchi/HaiTang.library.2018k.git</RepositoryUrl>
+    <PackageTags>HaiTangYunchi;HaiTang.library;HaiTang.library.2018;Update</PackageTags>
+    <Copyright>Copyright © 2025 HaiTangYunchi. All rights reserved.</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="files\License.txt" />
+    <None Remove="files\update.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="NLog" Version="6.0.6" />
+    <PackageReference Include="System.Management" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="files\License.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </Resource>
+    <Resource Include="files\README.md">
+	  <Pack>True</Pack>
+	  <PackagePath>\</PackagePath>
+	</Resource>
+    <Resource Include="files\update.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </Resource>
+  </ItemGroup>
+	<ItemGroup>
+		<None Include="$(OutputPath)*.exe" Pack="true" PackagePath="content\" />
+		<None Include="$(OutputPath)*.json" Pack="true" PackagePath="content\" />
+		<None Include="$(OutputPath)*.targets" Pack="true" PackagePath="build/$(PackageId).targets" />
+
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="files\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Update="upgrade.targets">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+</Project>

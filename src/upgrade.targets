@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Target Name="CopyMyPackageFiles" BeforeTargets="Build">
+		<ItemGroup>
+			<!-- 明确列出所有需要复制的文件 -->
+			<FilesToCopy Include="$(MSBuildThisFileDirectory)..\content\*.*" />
+		</ItemGroup>
+		<!-- 执行复制任务 -->
+		<Message Importance="high" Text="Copying files from @(FilesToCopy) to $(OutputPath)" />
+		<Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="True" />
+	</Target>
+</Project>
