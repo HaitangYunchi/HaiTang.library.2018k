@@ -32,7 +32,7 @@ namespace HaiTang.library
     #region 
     #endregion
     #region AES加密类 自动IV
-    public class Aesserver
+    public class AutoAesHelper
     {
         /// <summary>
         /// 将十六进制字符串转换为字节数组
@@ -54,7 +54,7 @@ namespace HaiTang.library
         /// <param name="plainText">明文</param>
         /// <param name="key">AES密钥（十六进制字符串）</param>
         /// <returns>Base64编码的加密数据（包含IV和密文）</returns>
-        public static string EncryptAESWithRandomIV(string plainText, string key)
+        public static string Encrypt(string plainText, string key)
         {
             using (Aes aesAlg = Aes.Create())
             {
@@ -87,7 +87,7 @@ namespace HaiTang.library
         /// <param name="combinedData">Base64编码的加密数据（包含IV和密文）</param>
         /// <param name="key">AES密钥（十六进制字符串）</param>
         /// <returns>解密后的明文</returns>
-        public static string DecryptAESWithRandomIV(string combinedData, string key)
+        public static string Decrypt(string combinedData, string key)
         {
             byte[] fullData = Convert.FromBase64String(combinedData);
 
@@ -249,37 +249,7 @@ namespace HaiTang.library
             }
         }
 
-        /// <summary>
-        /// 生成密码学安全的随机盐值
-        /// </summary>
-        /// <param name="length">盐值的字节长度，默认为64字节</param>
-        /// <returns>返回Base64编码的随机盐值字符串</returns>
-        /// <exception cref="ArgumentOutOfRangeException">当length小于等于0时抛出</exception>
-        /// <example>
-        /// 使用示例：
-        /// <code>
-        /// string salt = SaltAesEncry.GenerateSalt(); // 生成64字节盐值
-        /// string customSalt = SaltAesEncry.GenerateSalt(32); // 生成32字节盐值
-        /// </code>
-        /// </example>
-        public static string GenerateSalt(int length = 64)
-        {
-            // 验证输入参数
-            if (length <= 0)
-                throw new ArgumentOutOfRangeException(nameof(length), "盐值长度必须大于0");
-
-            // 创建指定长度的随机字节数组
-            var randomBytes = new byte[length];
-
-            // 使用密码学安全的随机数生成器
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                // 填充随机字节
-                rng.GetBytes(randomBytes);
-                // 将随机字节数组转换为Base64字符串返回
-                return Convert.ToBase64String(randomBytes);
-            }
-        }
+        
     }
     #endregion
 }

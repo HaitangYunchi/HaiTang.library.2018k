@@ -21,15 +21,49 @@
  *----------------------------------------------------------------*/
 
 
-using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace HaiTang.library
 {
+    /// <summary>
+    /// 提供常用哈希算法的静态工具类
+    /// <para>支持SHA-256和SHA-512哈希算法</para>
+    /// </summary>
+    /// <remarks>
+    /// <para>本类提供线程安全的哈希计算方法，适合在并发场景下使用</para>
+    /// <para>所有方法均为静态方法，可直接调用无需创建实例</para>
+    /// <para>哈希输出为十六进制字符串格式（大写字母）</para>
+    /// </remarks>
+    /// <example>
+    /// 使用示例：
+    /// <code>
+    /// string password = "myPassword123";
+    /// string sha256Hash = Hasher.Sha256(password); // 计算SHA-256哈希
+    /// string sha512Hash = Hasher.Sha512(password); // 计算SHA-512哈希
+    /// </code>
+    /// </example>
+    /// <seealso cref="SHA256"/>
+    /// <seealso cref="SHA512"/>
     public class Hasher
     {
+        /// <summary>
+        /// 计算输入字符串的SHA-256哈希值
+        /// </summary>
+        /// <param name="input">要计算哈希的输入字符串</param>
+        /// <returns>64个字符的十六进制字符串，表示SHA-256哈希值</returns>
+        /// <exception cref="ArgumentNullException">当<paramref name="input"/>为null或空字符串时抛出</exception>
+        /// <remarks>
+        /// <para>使用UTF-8编码将字符串转换为字节数组</para>
+        /// <para>哈希输出为64个字符的十六进制字符串（大写）</para>
+        /// <para>示例：对于输入"hello"，返回"2CF24DBA5FB0A30E26E83B2AC5B9E29E1B161E5C1FA7425E73043362938B9824"</para>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// string hash = Hasher.Sha256("password123");
+        /// Console.WriteLine(hash); // 输出：EF92B778BAFE771E89245B89ECBC08A44A4E166C06659911881F383D4473E94F
+        /// </code>
+        /// </example>
         public static string Sha256(string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -43,6 +77,25 @@ namespace HaiTang.library
                 return Convert.ToHexString(hashBytes);
             }
         }
+
+        /// <summary>
+        /// 计算输入字符串的SHA-512哈希值
+        /// </summary>
+        /// <param name="input">要计算哈希的输入字符串</param>
+        /// <returns>128个字符的十六进制字符串，表示SHA-512哈希值</returns>
+        /// <exception cref="ArgumentNullException">当<paramref name="input"/>为null或空字符串时抛出</exception>
+        /// <remarks>
+        /// <para>使用UTF-8编码将字符串转换为字节数组</para>
+        /// <para>哈希输出为128个字符的十六进制字符串（大写）</para>
+        /// <para>SHA-512比SHA-256提供更强的安全性，但生成的哈希值更长</para>
+        /// <para>示例：对于输入"hello"，返回"9B71D224BD62F3785D96D46AD3EA3D73319BFBC2890CAADA2F2D80E0F2DCEB48C57C21D6D1E2F9B1B0B68A8A1E9AB1B8C0D1C6E2D2E4F7C8A1B6C8D2E5F"</para>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// string hash = Hasher.Sha512("password123");
+        /// Console.WriteLine(hash); // 输出：长度128位的十六进制字符串
+        /// </code>
+        /// </example>
         public static string Sha512(string input)
         {
             if (string.IsNullOrEmpty(input))

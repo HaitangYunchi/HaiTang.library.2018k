@@ -21,8 +21,9 @@
  *----------------------------------------------------------------*/
 
 
-using System.Management;
 using HaiTang.library.Utils;
+using System.Management;
+using System.Security.Cryptography;
 
 
 namespace HaiTang.library
@@ -103,6 +104,42 @@ namespace HaiTang.library
             }
 
             return new string(result);
+        }
+
+        /// <summary>
+        /// 生成密码学安全的随机盐值
+        /// </summary>
+        /// <param name="length">盐值的字节长度，默认为64字节</param>
+        /// <returns>返回Base64编码的随机盐值字符串</returns>
+        /// <exception cref="ArgumentOutOfRangeException">当length小于等于0时抛出</exception>
+        /// <example>
+        /// 使用示例：
+        /// <code>
+        /// string salt = SaltAesEncry.GenerateSalt(); // 生成64字节盐值
+        /// string customSalt = SaltAesEncry.GenerateSalt(32); // 生成32字节盐值
+        /// </code>
+        /// </example>
+        public static string GenerateSalt(int length = 64)
+        {
+            // 验证输入参数
+            if (length <= 0)
+            {
+                Log.Error("生成盐值失败：长度必须大于0");
+                throw new ArgumentOutOfRangeException(nameof(length), "盐值长度必须大于0");
+            }
+                
+
+            // 创建指定长度的随机字节数组
+            var randomBytes = new byte[length];
+
+            // 使用密码学安全的随机数生成器
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                // 填充随机字节
+                rng.GetBytes(randomBytes);
+                // 将随机字节数组转换为Base64字符串返回
+                return Convert.ToBase64String(randomBytes);
+            }
         }
         // 获取CPU信息
         private static string GetCpuId()

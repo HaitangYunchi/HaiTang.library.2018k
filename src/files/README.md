@@ -1,353 +1,802 @@
-## HaiTang.library Update API µ÷ÓÃÊÖ²á
+# HaiTangYunchi.library.Update API è°ƒç”¨æ‰‹å†Œ
 
+## æ¦‚è¿°
 
- ### ¸ÅÊö
+HaiTang.library.Update ç±»æä¾›äº†ä¸ [2018k](https://gitee.com/link?target=http%3A%2F%2F2018k.cn) API æ¥å£çš„å®Œæ•´å°è£…ï¼ŒåŒ…æ‹¬è½¯ä»¶æ›´æ–°ã€ç”¨æˆ·ç®¡ç†ã€å¡å¯†éªŒè¯ã€äº‘å˜é‡æ“ä½œç­‰åŠŸèƒ½ã€‚æœ¬åº“æ”¯æŒå¤š API åœ°å€æ•…éšœè½¬ç§»ã€å¥åº·æ£€æµ‹å’ŒåŠ å¯†é€šä¿¡ã€‚
 
-HaiTang.library.Update ÀàÌá¹©ÁËÓë [2018k](http://2018k.cn) API ½Ó¿ÚµÄÍêÕû·â×°£¬°üÀ¨Èí¼ş¸üĞÂ¡¢ÓÃ»§¹ÜÀí¡¢¿¨ÃÜÑéÖ¤¡¢ÔÆ±äÁ¿²Ù×÷µÈ¹¦ÄÜ¡£±¾¿âÖ§³Ö¶àAPIµØÖ·¹ÊÕÏ×ªÒÆ¡¢½¡¿µ¼ì²âºÍ¼ÓÃÜÍ¨ĞÅ¡£
+## å¿«é€Ÿå¼€å§‹
 
- ### ¿ìËÙ¿ªÊ¼
+### **åˆå§‹åŒ–**
 
- **1. ³õÊ¼»¯** 
+#### **è½¯ä»¶å®ä¾‹åˆå§‹åŒ–**
 
- **Èí¼şÊµÀı³õÊ¼»¯** 
-
-```csharp
+```c#
 var update = new Update();
-var softwareInfo = await update.InitializationAsync("Èí¼şID", "¿ª·¢ÕßÃÜÔ¿", "¿ÉÑ¡»úÆ÷Âë");
+var softwareInfo = await update.InitializationAsync("è½¯ä»¶ID", "å¼€å‘è€…å¯†é’¥", "å¯é€‰æœºå™¨ç ");
 ```
 
- **ÓÃ»§³õÊ¼»¯** 
+#### **ç”¨æˆ·åˆå§‹åŒ–**
 
-```csharp
-var userInfo = await update.InitializationUserAsync("Èí¼şID", "¿ª·¢ÕßÃÜÔ¿", "ÓÊÏä", "ÃÜÂë");
+```c#
+var userInfo = await update.InitializationUserAsync("è½¯ä»¶ID", "å¼€å‘è€…å¯†é’¥", "é‚®ç®±", "å¯†ç ");
 ```
 
-### Èí¼şÊµÀı·½·¨ 
+## è½¯ä»¶å®ä¾‹æ–¹æ³•
 
-  **1. ¼ì²âÈí¼şÊµÀı×´Ì¬** 
+### 1. æ£€æµ‹è½¯ä»¶å®ä¾‹çŠ¶æ€
 
-```csharp
-bool isValid = await update.GetSoftCheck("Èí¼şID", "¿ª·¢ÕßÃÜÔ¿", "¿ÉÑ¡»úÆ÷Âë");
+```c#
+bool isValid = await update.GetSoftCheck("è½¯ä»¶ID", "å¼€å‘è€…å¯†é’¥", "å¯é€‰æœºå™¨ç ");
 ```
 
- **¡¤ ²ÎÊı:
-  ¡¤ ID: ³ÌĞòÊµÀıID
-  ¡¤ key: OpenID/¿ª·¢ÕßÃÜÔ¿
-  ¡¤ Code: »úÆ÷Âë£¨¿ÉÑ¡£¬Îª¿ÕÊ±×Ô¶¯»ñÈ¡£©
-¡¤ ·µ»ØÖµ: bool - ÊµÀıÊÇ·ñÓĞĞ§** 
+- **å‚æ•°**:
+  - `ID`: ç¨‹åºå®ä¾‹ID
+  - `key`: å¼€å‘è€…å¯†é’¥
+  - `Code`: æœºå™¨ç ï¼ˆå¯é€‰ï¼Œä¸ºç©ºæ—¶è‡ªåŠ¨è·å–ï¼‰
+- **è¿”å›å€¼**: `bool` - å®ä¾‹æ˜¯å¦æœ‰æ•ˆ
 
- **2. »ñÈ¡Èí¼şĞÅÏ¢** 
+### 2. è·å–è½¯ä»¶ä¿¡æ¯
 
- **»ñÈ¡È«²¿ĞÅÏ¢** 
+#### è·å–å…¨éƒ¨ä¿¡æ¯
 
-```csharp
+```c#
 string allInfo = await update.GetSoftAll();
-// ·µ»Ø¸ñÊ½»¯µÄJSON×Ö·û´®
+// è¿”å›æ ¼å¼åŒ–çš„JSONå­—ç¬¦ä¸²
 ```
 
- **»ñÈ¡ÌØ¶¨ĞÅÏ¢** 
+#### è·å–ç‰¹å®šä¿¡æ¯
 
-```csharp
-string softwareId = await update.GetSoftwareID();        // ÊµÀıID
-string version = await update.GetVersionNumberl();       // °æ±¾ºÅ
-string name = await update.GetSoftwareName();            // Èí¼şÃû³Æ
-string updateInfo = await update.GetVersionInformation(); // ¸üĞÂÄÚÈİ
-string notice = await update.GetNotice();                // ¹«¸æ
-string downloadLink = await update.GetDownloadLink();    // ÏÂÔØÁ´½Ó
-string visits = await update.GetNumberOfVisits();        // ·ÃÎÊÁ¿
-string minVersion = await update.GetMiniVersion();       // ×îµÍ°æ±¾
+```c#
+string softwareId = await update.GetSoftwareID();        	// å®ä¾‹ID
+string version = await update.GetVersionNumber();       	// ç‰ˆæœ¬å·
+string name = await update.GetSoftwareName();            	// è½¯ä»¶åç§°
+string updateInfo = await update.GetVersionInformation(); 	// æ›´æ–°å†…å®¹
+string notice = await update.GetNotice();                	// å…¬å‘Š
+string downloadLink = await update.GetDownloadLink();    	// ä¸‹è½½é“¾æ¥
+string visits = await update.GetNumberOfVisits();        	// è®¿é—®é‡
+string minVersion = await update.GetMiniVersion();       	// æœ€ä½ç‰ˆæœ¬
 ```
 
- **3. ¿¨ÃÜÏà¹Ø²Ù×÷** 
+### 3. å¡å¯†ç›¸å…³æ“ä½œ
 
- **¼ì²é¿¨ÃÜ×´Ì¬** 
+#### æ£€æŸ¥å¡å¯†çŠ¶æ€
 
-```csharp
+```c#
 bool isValid = await update.GetIsItEffective();
 ```
 
- **¡¤ ·µ»ØÖµ: bool - ¿¨ÃÜÊÇ·ñÓĞĞ§** 
+- **è¿”å›å€¼**: `bool` - å¡å¯†æ˜¯å¦æœ‰æ•ˆ
 
- **»ñÈ¡¿¨ÃÜĞÅÏ¢** 
+#### è·å–å¡å¯†ä¿¡æ¯
 
-```csharp
-string expireDate = await update.GetExpirationDate();    // ¹ıÆÚÊ±¼ä´Á
-string remarks = await update.GetRemarks();              // ±¸×¢
-string days = await update.GetNumberOfDays();            // ÓĞĞ§ÆÚÌìÊı
-string authId = await update.GetNetworkVerificationId(); // ¿¨ÃÜID
+```c#
+string expireDate = await update.GetExpirationDate();    // è¿‡æœŸæ—¶é—´æˆ³
+string remarks = await update.GetRemarks();              // å¤‡æ³¨
+string days = await update.GetNumberOfDays();            // æœ‰æ•ˆæœŸå¤©æ•°
+string authId = await update.GetNetworkVerificationId(); // å¡å¯†ID
 ```
 
- **¼¤»î¿¨ÃÜ** 
+#### æ¿€æ´»å¡å¯†
 
-```csharp
-var (success, message) = await update.ActivationKey("¿¨ÃÜID");
+```c#
+var (success, message) = await update.ActivationKey("å¡å¯†ID");
 ```
 
- **¡¤ ²ÎÊı: authId - ¿¨ÃÜID
-¡¤ ·µ»ØÖµ: (bool, string) - (³É¹¦±êÖ¾, ÏûÏ¢)** 
- **
-´´½¨¿¨ÃÜ** 
+- **å‚æ•°**: `authId` - å¡å¯†ID
+- **è¿”å›å€¼**: `(bool, string)` - (æˆåŠŸæ ‡å¿—, æ¶ˆæ¯)
 
-```csharp
-string result = await update.CreateNetworkAuthentication(30, "²âÊÔ¿¨ÃÜ");
-// ·µ»ØJSON¸ñÊ½µÄ¿¨ÃÜĞÅÏ¢
+#### åˆ›å»ºå¡å¯†
+
+```c#
+string result = await update.CreateNetworkAuthentication(30, "æµ‹è¯•å¡å¯†");
+// è¿”å›JSONæ ¼å¼çš„å¡å¯†ä¿¡æ¯
 ```
 
- **¡¤ ²ÎÊı:
-  ¡¤ day: ÓĞĞ§ÆÚÌìÊı
-  ¡¤ remark: ¿¨ÃÜ±¸×¢** 
+- **å‚æ•°**:
+  - `day`: æœ‰æ•ˆæœŸå¤©æ•°
+  - `remark`: å¡å¯†å¤‡æ³¨
 
- **½â°ó/»»°ó** 
+#### è§£ç»‘/æ¢ç»‘
 
-```csharp
-var (success, message) = await update.ReplaceBind("¿¨ÃÜID", "ĞÂ»úÆ÷Âë");
+```c#
+var (success, message) = await update.ReplaceBind("å¡å¯†ID", "æ–°æœºå™¨ç ");
 ```
 
- **¡¤ ²ÎÊı:
-  ¡¤ AuthId: ¿¨ÃÜID
-  ¡¤ Code: ĞÂ»úÆ÷Âë£¨¿ÉÑ¡** £©
+- **å‚æ•°**:
+  - `AuthId`: å¡å¯†ID
+  - `Code`: æ–°æœºå™¨ç ï¼ˆä¸ºç©ºåˆ™è§£ç»‘ï¼‰
 
- **4. ÔÆ±äÁ¿²Ù×÷** 
+### 4. äº‘å˜é‡æ“ä½œ
 
- **»ñÈ¡ÔÆ±äÁ¿** 
+#### è·å–äº‘å˜é‡
 
-```csharp
-string value = await update.GetCloudVariables("±äÁ¿Ãû");
+```c#
+string value = await update.GetCloudVariables("å˜é‡å");
 ```
 
- **¡¤ ²ÎÊı: VarName - ÔÆ¶Ë±äÁ¿Ãû³Æ
-¡¤ ·µ»ØÖµ: string - ±äÁ¿Öµ** 
+- **å‚æ•°**: `VarName` - äº‘ç«¯å˜é‡åç§°
+- **è¿”å›å€¼**: `string` - å˜é‡å€¼
 
- **ÉèÖÃ/¸üĞÂÔÆ±äÁ¿** 
+#### è®¾ç½®/æ›´æ–°äº‘å˜é‡
 
-```csharp
-var (success, message) = await update.updateCloudVariables("±äÁ¿Ãû", "ĞÂÖµ");
+```c#
+var (success, message) = await update.updateCloudVariables("å˜é‡å", "æ–°å€¼");
 ```
 
- **¡¤ ²ÎÊı:
-  ¡¤ VarKey: ±äÁ¿Ãû
-  ¡¤ Value: ±äÁ¿Öµ
-¡¤ ·µ»ØÖµ: (bool, string) - (³É¹¦±êÖ¾, ÏûÏ¢)** 
+- **å‚æ•°**:
+  - `VarKey`: å˜é‡å
+  - `Value`: å˜é‡å€¼
+- **è¿”å›å€¼**: `(bool, string)` - (æˆåŠŸæ ‡å¿—, æ¶ˆæ¯)
 
- **5. ÆäËû²Ù×÷** 
+### 5. å…¶ä»–æ“ä½œ
 
- **·¢ËÍÏûÏ¢** 
+#### å‘é€æ¶ˆæ¯
 
-```csharp
-string response = await update.MessageSend("ĞèÒª·¢ËÍµÄÏûÏ¢");
-// ·µ»Ø·şÎñÆ÷ÏìÓ¦JSON
+```c#
+string response = await update.MessageSend("éœ€è¦å‘é€çš„æ¶ˆæ¯");
+// è¿”å›æœåŠ¡å™¨å“åº”JSON
 ```
 
- **»ñÈ¡·şÎñÆ÷Ê±¼ä** 
+#### æ£€æŸ¥å¼ºåˆ¶æ›´æ–°
 
-```csharp
-string timestamp = await update.GetTimeStamp();
-```
-
- **¼ì²éÇ¿ÖÆ¸üĞÂ** 
-
-```csharp
+```c#
 bool forceUpdate = await update.GetMandatoryUpdate();
 ```
 
- **»ñÈ¡Èí¼şMD5** 
+#### è·å–æœåŠ¡å™¨æ—¶é—´æˆ³
 
-```csharp
-string md5 = await update.GetSoftwareMd5();
+```c#
+string timestamp = await update.GetTimeStamp();
 ```
 
- **»ñÈ¡Ê£ÓàÊ¹ÓÃÊ±¼ä** 
+#### è·å–å‰©ä½™ä½¿ç”¨æ—¶é—´
 
-```csharp
+```c#
 long remainingTime = await update.GetRemainingUsageTime();
 ```
 
- **¡¤ ·µ»ØÖµ:
-  ¡¤ -1: ÓÀ¾Ã
-  ¡¤ 0: ÒÑ¹ıÆÚ
-  ¡¤ 1: Î´×¢²á
-  ¡¤ ÆäËû: Ê£ÓàÊ±¼ä´Á£¨ºÁ £© **
+- **è¿”å›å€¼**:
+  - `-1`: æ°¸ä¹…
+  - `0`: å·²è¿‡æœŸ
+  - `1`: æœªæ³¨å†Œ
+  - å…¶ä»–: å‰©ä½™æ—¶é—´æˆ³ï¼ˆæ¯«ç§’ï¼‰
 
- **»ñÈ¡ÍøÂçÑéÖ¤Âë** 
+## ç”¨æˆ·ç®¡ç†æ–¹æ³•
 
-```csharp
-string captcha = await update.GetNetworkCode();
+### 1. ç”¨æˆ·æ³¨å†Œ
+
+```c#
+bool success = await update.CustomerRegister("email@example.com", "password", "æ˜µç§°", "å¤´åƒURL", "éªŒè¯ç ");
 ```
 
-### ÓÃ»§¹ÜÀí·½·¨ 
+- **å‚æ•°**:
+  - `email`: é‚®ç®±
+  - `password`: å¯†ç 
+  - `nickName`: æ˜µç§°ï¼ˆå¯é€‰ï¼‰
+  - `avatarUrl`: å¤´åƒURLï¼ˆå¯é€‰ï¼‰
+  - `captcha`: éªŒè¯ç ï¼ˆå¯é€‰ï¼‰
+- **è¿”å›å€¼**: `bool` - æ³¨å†Œæ˜¯å¦æˆåŠŸ
 
- **1. ÓÃ»§×¢²á** 
+### 2. è·å–ç”¨æˆ·ä¿¡æ¯
 
-```csharp
-bool success = await update.CustomerRegister("email@example.com", "password", "êÇ³Æ", "Í·ÏñURL", "ÑéÖ¤Âë");
-```
+#### è·å–å…¨éƒ¨ç”¨æˆ·ä¿¡æ¯
 
- **¡¤ ²ÎÊı:
-  ¡¤ email: ÓÊÏä
-  ¡¤ password: ÃÜÂë
-  ¡¤ nickName: êÇ³Æ£¨¿ÉÑ¡£©
-  ¡¤ avatarUrl: Í·ÏñURL£¨¿ÉÑ¡£©
-  ¡¤ captcha: ÑéÖ¤Âë£¨¿ÉÑ¡£©
-¡¤ ·µ»ØÖµ: bool - ×¢²áÊÇ·ñ³É¹¦** 
-
- **2. »ñÈ¡ÓÃ»§ĞÅÏ¢** 
-
- **»ñÈ¡È«²¿ÓÃ»§ĞÅÏ¢** 
-
-```csharp
+```c#
 string userInfoJson = await update.GetUserInfo();
-// ·µ»Ø¸ñÊ½»¯µÄJSON×Ö·û´®
+// è¿”å›æ ¼å¼åŒ–çš„JSONå­—ç¬¦ä¸²
 ```
 
- **»ñÈ¡ÌØ¶¨ÓÃ»§ĞÅÏ¢** 
+#### è·å–ç‰¹å®šç”¨æˆ·ä¿¡æ¯
 
-```csharp
-string userId = await update.GetUserId();          // ÓÃ»§ID
-string avatar = await update.GetUserAvatar();      // ÓÃ»§Í·Ïñ
-string nickname = await update.GetUserNickname();  // ÓÃ»§êÇ³Æ
-string email = await update.GetUserEmail();        // ÓÃ»§ÓÊÏä
-string balance = await update.GetUserBalance();    // ÕË»§Óà¶î/Ê±³¤
-bool license = await update.GetUserLicense();      // ÊÇ·ñÊÚÈ¨
-string loginTime = await update.GetUserTimeCrypt();// µÇÂ¼Ê±¼ä´Á
+```c#
+string userId = await update.GetUserId();          // ç”¨æˆ·ID
+string avatar = await update.GetUserAvatar();      // ç”¨æˆ·å¤´åƒ
+string nickname = await update.GetUserNickname();  // ç”¨æˆ·æ˜µç§°
+string email = await update.GetUserEmail();        // ç”¨æˆ·é‚®ç®±
+string balance = await update.GetUserBalance();    // è´¦æˆ·ä½™é¢/æ—¶é•¿
+bool license = await update.GetUserLicense();      // æ˜¯å¦æˆæƒ
+string loginTime = await update.GetUserTimeCrypt();// ç™»å½•æ—¶é—´æˆ³
 ```
 
- **3. ¿¨ÃÜ³äÖµ** 
+### 3. å¡å¯†å……å€¼
 
-```csharp
-string result = await update.Recharge("¿¨ÃÜID");
-// ·µ»Ø·şÎñÆ÷ÏìÓ¦JSON
+```c#
+string result = await update.Recharge("å¡å¯†ID");
+// è¿”å›æœåŠ¡å™¨å“åº”JSON
 ```
 
- **¼ÓÃÜ½âÃÜ·½·¨** 
+## ç¼“å­˜æœºåˆ¶
 
- **1. AES¼ÓÃÜ** 
+### è½¯ä»¶ä¿¡æ¯ç¼“å­˜
 
-```csharp
-string encrypted = update.AesEncrypt(dataObject, "Ê®Áù½øÖÆÃÜÔ¿");
+- ç¼“å­˜æ—¶é—´: 5åˆ†é’Ÿ
+- ç›¸å…³æ–¹æ³•:
+  - `GetCachedSoftwareInfo()`: è·å–ç¼“å­˜
+  - `SetCachedSoftwareInfo()`: è®¾ç½®ç¼“å­˜
+  - `IsCacheValid()`: æ£€æŸ¥ç¼“å­˜æœ‰æ•ˆæ€§
+  - `ClearStaticCache()`: æ¸…é™¤ç¼“å­˜
+
+### ç”¨æˆ·ä¿¡æ¯ç¼“å­˜
+
+- ç¼“å­˜æ—¶é—´: 5åˆ†é’Ÿ
+- ç›¸å…³æ–¹æ³•:
+  - `GetCachedUserInfo()`: è·å–ç¼“å­˜
+  - `SetCachedUserInfo()`: è®¾ç½®ç¼“å­˜
+  - `IsUserCacheValid()`: æ£€æŸ¥ç¼“å­˜æœ‰æ•ˆæ€§
+  - `ClearUserCache()`: æ¸…é™¤ç¼“å­˜
+
+## æ•…éšœè½¬ç§»æœºåˆ¶
+
+### å¥åº·æ£€æµ‹
+
+- è‡ªåŠ¨æ£€æµ‹ API åœ°å€å¥åº·çŠ¶æ€
+- 5åˆ†é’Ÿç¼“å­˜æ£€æµ‹ç»“æœ
+- æ”¯æŒå¤šä¸ªå¤‡ç”¨åœ°å€è‡ªåŠ¨åˆ‡æ¢
+
+### ç½‘ç»œæ£€æŸ¥
+
+- è‡ªåŠ¨æ£€æµ‹ç½‘ç»œè¿æ¥çŠ¶æ€
+- ç½‘ç»œä¸å¯ç”¨æ—¶ä½¿ç”¨æœ¬åœ°åœ°å€
+
+## å·¥å…·æ–¹æ³•
+
+### å¸¸ç”¨æ–¹æ³•
+
+```c#
+Tools.GetMachineCodeEx();  							// è·å–æœºå™¨ç 
+Update.upgrade(string downloadUrl);  				// å¯åŠ¨æ›´æ–°ç¨‹åº
+Tools.GenerateRandomString(int length,int type);	// ç”Ÿæˆéšæœºå­—ç¬¦
+Tools.GenerateSalt(int length = 64);  				// ç”Ÿæˆéšæœºç›å€¼ï¼Œé»˜è®¤ä¸º64å­—èŠ‚
+Hasher.Sha256(string input);						// ç”ŸæˆSHA256å“ˆå¸Œå€¼
+Hasher.Sha512(string input);						// ç”ŸæˆSHA512å“ˆå¸Œå€¼
 ```
 
- **¡¤ ²ÎÊı:
-  ¡¤ data: Òª¼ÓÃÜµÄÊı¾İ¶ÔÏó
-  ¡¤ key: Ê®Áù½øÖÆ¸ñÊ½µÄÃÜÔ¿
-¡¤ ·µ»ØÖµ: string - Base64±àÂëµÄ¼ÓÃÜ×Ö·û´®** 
+### Logæ—¥å¿—ç±»æ–¹æ³•
 
- **2. AES½âÃÜ** 
+Log ç±»æ˜¯ä¸€ä¸ªé™æ€æ—¥å¿—å·¥å…·ç±»ï¼Œæä¾›æŒ‰å¤©åˆ†å‰²çš„æ—¥å¿—æ–‡ä»¶è®°å½•åŠŸèƒ½ã€‚æ—¥å¿—æ–‡ä»¶é»˜è®¤å­˜å‚¨åœ¨åº”ç”¨ç¨‹åºæ ¹ç›®å½•ä¸‹çš„ `Logs` æ–‡ä»¶å¤¹ä¸­
 
-```csharp
-string decrypted = update.AesDecrypt("¼ÓÃÜ×Ö·û´®", "Ê®Áù½øÖÆÃÜÔ¿");
+#### æ—¥å¿—æ ¼å¼
+
+```tex
+{æ—¶é—´æˆ³} [{æ—¥å¿—çº§åˆ«}] {ç±»å}.{æ–¹æ³•å} - {æ¶ˆæ¯å†…å®¹} {å¼‚å¸¸ä¿¡æ¯}
+ç¤ºä¾‹ï¼š2025-12-01 15:02:46.1234 [INFO] OrderService.ProcessOrder - å¼€å§‹å¤„ç†è®¢å• #1001
 ```
 
- **¡¤ ²ÎÊı:
-  ¡¤ encryptedData: Base64±àÂëµÄ¼ÓÃÜ×Ö·û´®
-  ¡¤ key: Ê®Áù½øÖÆ¸ñÊ½µÄÃÜÔ¿
-¡¤ ·µ»ØÖµ: string - ½âÃÜºóµÄ×Ö·û´®** 
+#### ç±»æ–¹æ³•
 
+##### `Debug(string message)`
 
-### »º´æ»úÖÆ
+**æè¿°**
+è®°å½• Debug çº§åˆ«çš„æ—¥å¿—æ¶ˆæ¯ï¼Œé€šå¸¸ç”¨äºå¼€å‘é˜¶æ®µçš„è°ƒè¯•ä¿¡æ¯è®°å½•ã€‚
 
- **Èí¼şĞÅÏ¢»º´æ** 
+**å‚æ•°**
 
-¡¤  **»º´æÊ±¼ä:**  5·ÖÖÓ
-¡¤  **Ïà¹Ø·½·¨:** 
-  ¡¤ GetCachedSoftwareInfo(): »ñÈ¡»º´æ
-  ¡¤ SetCachedSoftwareInfo(): ÉèÖÃ»º´æ
-  ¡¤ IsCacheValid(): ¼ì²é»º´æÓĞĞ§ĞÔ
-  ¡¤ ClearStaticCache(): Çå³ı»º´æ
+- `message` (string): è¦è®°å½•çš„è°ƒè¯•ä¿¡æ¯
 
- **ÓÃ»§ĞÅÏ¢»º´æ** 
+**è°ƒç”¨ç¤ºä¾‹**
 
-¡¤  **»º´æÊ±¼ä:**  5·ÖÖÓ
-¡¤  **Ïà¹Ø·½·¨:** 
-  ¡¤ GetCachedUserInfo(): »ñÈ¡»º´æ
-  ¡¤ SetCachedUserInfo(): ÉèÖÃ»º´æ
-  ¡¤ IsUserCacheValid(): ¼ì²é»º´æÓĞĞ§ĞÔ
-  ¡¤ ClearUserCache(): Çå³ı»º´æ
-
-### ¹ÊÕÏ×ªÒÆ»úÖÆ
-
- **½¡¿µ¼ì²â** 
-
-¡¤ ×Ô¶¯¼ì²âAPIµØÖ·½¡¿µ×´Ì¬
-¡¤ 5·ÖÖÓ»º´æ¼ì²â½á¹û
-¡¤ Ö§³Ö¶à¸ö±¸ÓÃµØÖ·×Ô¶¯ÇĞ»»
-
- **ÍøÂç¼ì²é** 
-
-¡¤ ×Ô¶¯¼ì²âÍøÂçÁ¬½Ó×´Ì¬
-¡¤ ÍøÂç²»¿ÉÓÃÊ±Ê¹ÓÃ±¾µØµØÖ·
-
-### ¹¤¾ß·½·¨
-
- **»úÆ÷Âë»ñÈ¡** 
-
-```csharp
-Tools.GetMachineCodeEx()  // »ñÈ¡»úÆ÷Âë
+```c#
+// è®°å½•è°ƒè¯•ä¿¡æ¯
+Log.Debug("å¼€å§‹å¤„ç†ç”¨æˆ·è¯·æ±‚ï¼Œå‚æ•°: {param}", userId);
+Log.Debug("ç¼“å­˜å‘½ä¸­ç‡: {rate}%", cacheHitRate);
+Log.Debug("å†…å­˜ä½¿ç”¨æƒ…å†µ: {used}/{total} MB", usedMemory, totalMemory);
 ```
 
- **³ÌĞò¸üĞÂ** 
+**è¾“å‡ºç¤ºä¾‹**
 
-```csharp
-Update.upgrade("ÏÂÔØµØÖ·")  // Æô¶¯¸üĞÂ³ÌĞò
+```tex
+2025-12-01 15:02:46.1234 [DEBUG] UserController.GetUser - å¼€å§‹å¤„ç†ç”¨æˆ·è¯·æ±‚ï¼Œå‚æ•°: 12345
+2025-12-01 15:02:47.2345 [DEBUG] CacheManager.GetData - ç¼“å­˜å‘½ä¸­ç‡: 85.5%
+2025-12-01 15:02:48.3456 [DEBUG] MemoryMonitor.Check - å†…å­˜ä½¿ç”¨æƒ…å†µ: 512/1024 MB
 ```
 
-### ×¢ÒâÊÂÏî
+##### `Info(string message)`
 
-1. ³õÊ¼»¯Ë³Ğò: µ÷ÓÃ¾ßÌå·½·¨Ç°ĞèÒªÏÈµ÷ÓÃ¶ÔÓ¦µÄ³õÊ¼»¯·½·¨
-2. Òì²½²Ù×÷: ËùÓĞAPIµ÷ÓÃ¶¼ÊÇÒì²½µÄ£¬ĞèÒªÊ¹ÓÃ await
-3. ´íÎó´¦Àí: ½¨Òé¶ÔÃ¿¸öAPIµ÷ÓÃ½øĞĞÒì³£²¶»ñ
-4. ÍøÂç×´Ì¬: ÔÚÍøÂç²»ÎÈ¶¨Ê±¿ÉÄÜÓĞÖØÊÔ»úÖÆ
-5. »º´æ: ×¢Òâ»º´æ¿ÉÄÜµ¼ÖÂÊı¾İ²»ÊÇÊµÊ±×îĞÂµÄ
-6. Ïß³Ì°²È«: ´ó¶àÊı·½·¨ÊÇÏß³Ì°²È«µÄ£¬µ«½¨Òé±ÜÃâ²¢·¢³õÊ¼»¯
+**æè¿°**
+è®°å½• Info çº§åˆ«çš„æ—¥å¿—æ¶ˆæ¯ï¼Œç”¨äºè®°å½•åº”ç”¨ç¨‹åºçš„æ­£å¸¸è¿è¡ŒçŠ¶æ€ä¿¡æ¯ã€‚
 
-### Ê¾Àı´úÂë
+**å‚æ•°**
 
- **ÍêÕûÈí¼şÑéÖ¤Á÷³Ì** 
+- `message` (string): è¦è®°å½•çš„ä¸€èˆ¬ä¿¡æ¯
 
-```csharp
+**è°ƒç”¨ç¤ºä¾‹**
+
+```c#
+// è®°å½•åº”ç”¨ç¨‹åºçŠ¶æ€ä¿¡æ¯
+Log.Info("åº”ç”¨ç¨‹åºå¯åŠ¨æˆåŠŸ");
+Log.Info("ç”¨æˆ· 'admin' ç™»å½•ç³»ç»Ÿ");
+Log.Info("æ•°æ®åº“è¿æ¥æ± åˆå§‹åŒ–å®Œæˆï¼Œè¿æ¥æ•°: {count}", connectionCount);
+Log.Info("å®šæ—¶ä»»åŠ¡æ‰§è¡Œå®Œæˆï¼Œè€—æ—¶: {elapsed}ms", elapsedTime);
+```
+
+**è¾“å‡ºç¤ºä¾‹**
+
+```tex
+2025-12-01 15:02:46.1234 [INFO] Program.Main - åº”ç”¨ç¨‹åºå¯åŠ¨æˆåŠŸ
+2025-12-01 15:02:47.2345 [INFO] AuthService.Login - ç”¨æˆ· 'admin' ç™»å½•ç³»ç»Ÿ
+2025-12-01 15:02:48.3456 [INFO] DatabasePool.Initialize - æ•°æ®åº“è¿æ¥æ± åˆå§‹åŒ–å®Œæˆï¼Œè¿æ¥æ•°: 20
+2025-12-01 15:02:49.4567 [INFO] Scheduler.Execute - å®šæ—¶ä»»åŠ¡æ‰§è¡Œå®Œæˆï¼Œè€—æ—¶: 1250ms
+```
+
+##### `Warn(string message)`
+
+**æè¿°**
+è®°å½• Warn çº§åˆ«çš„æ—¥å¿—æ¶ˆæ¯ï¼Œç”¨äºè®°å½•å¯èƒ½éœ€è¦å…³æ³¨çš„æ½œåœ¨é—®é¢˜æˆ–å¼‚å¸¸æƒ…å†µã€‚
+
+**å‚æ•°**
+
+- `message` (string): è¦è®°å½•çš„è­¦å‘Šä¿¡æ¯
+
+**è°ƒç”¨ç¤ºä¾‹**
+
+```c#
+// è®°å½•è­¦å‘Šä¿¡æ¯
+Log.Warn("æ•°æ®åº“è¿æ¥æ± ä½¿ç”¨ç‡è¿‡é«˜: {percentage}%", usagePercentage);
+Log.Warn("APIå“åº”æ—¶é—´è¶…è¿‡é˜ˆå€¼: {time}ms (é˜ˆå€¼: {threshold}ms)", responseTime, threshold);
+Log.Warn("é…ç½®æ–‡ä»¶ {file} ä¸å­˜åœ¨ï¼Œä½¿ç”¨é»˜è®¤é…ç½®", configFile);
+Log.Warn("ç£ç›˜ç©ºé—´ä¸è¶³ï¼Œå‰©ä½™: {freeSpace}GB", freeSpace);
+```
+
+**è¾“å‡ºç¤ºä¾‹**
+
+```tex
+2025-12-01 15:02:46.1234 [WARN] DatabasePool.Monitor - æ•°æ®åº“è¿æ¥æ± ä½¿ç”¨ç‡è¿‡é«˜: 85%
+2025-12-01 15:02:47.2345 [WARN] ApiMonitor.CheckResponse - APIå“åº”æ—¶é—´è¶…è¿‡é˜ˆå€¼: 1200ms (é˜ˆå€¼: 1000ms)
+2025-12-01 15:02:48.3456 [WARN] ConfigManager.Load - é…ç½®æ–‡ä»¶ appsettings.custom.json ä¸å­˜åœ¨ï¼Œä½¿ç”¨é»˜è®¤é…ç½®
+2025-12-01 15:02:49.4567 [WARN] DiskMonitor.Check - ç£ç›˜ç©ºé—´ä¸è¶³ï¼Œå‰©ä½™: 2.5GB
+```
+
+##### `Error(string message)`
+
+**æè¿°**
+è®°å½• Error çº§åˆ«çš„æ—¥å¿—æ¶ˆæ¯ï¼Œç”¨äºè®°å½•ä¸å½±å“åº”ç”¨ç¨‹åºç»§ç»­è¿è¡Œçš„é”™è¯¯ã€‚
+
+**å‚æ•°**
+
+- `message` (string): è¦è®°å½•çš„é”™è¯¯ä¿¡æ¯
+
+**è°ƒç”¨ç¤ºä¾‹**
+
+```c#
+// è®°å½•é”™è¯¯ä¿¡æ¯ï¼ˆæ— å¼‚å¸¸ï¼‰
+Log.Error("æ–‡ä»¶ä¸Šä¼ å¤±è´¥ï¼šæ–‡ä»¶å¤§å°è¶…è¿‡é™åˆ¶");
+Log.Error("ç”¨æˆ·æƒé™éªŒè¯å¤±è´¥ï¼Œç”¨æˆ·ID: {userId}", userId);
+Log.Error("APIè¯·æ±‚å¤±è´¥ï¼ŒHTTPçŠ¶æ€ç : {statusCode}", statusCode);
+Log.Error("æ•°æ®éªŒè¯å¤±è´¥ï¼Œå­—æ®µ '{field}' æ ¼å¼é”™è¯¯", fieldName);
+```
+
+**è¾“å‡ºç¤ºä¾‹**
+
+```tex
+2025-12-01 15:02:46.1234 [ERROR] FileService.Upload - æ–‡ä»¶ä¸Šä¼ å¤±è´¥ï¼šæ–‡ä»¶å¤§å°è¶…è¿‡é™åˆ¶
+2025-12-01 15:02:47.2345 [ERROR] AuthService.CheckPermission - ç”¨æˆ·æƒé™éªŒè¯å¤±è´¥ï¼Œç”¨æˆ·ID: 12345
+2025-12-01 15:02:48.3456 [ERROR] ApiClient.Request - APIè¯·æ±‚å¤±è´¥ï¼ŒHTTPçŠ¶æ€ç : 404
+2025-12-01 15:02:49.4567 [ERROR] Validator.Validate - æ•°æ®éªŒè¯å¤±è´¥ï¼Œå­—æ®µ 'email' æ ¼å¼é”™è¯¯
+```
+
+##### `Error(Exception ex, string message)`
+
+**æè¿°**
+è®°å½• Error çº§åˆ«çš„æ—¥å¿—æ¶ˆæ¯ï¼ŒåŒ…å«å¼‚å¸¸è¯¦ç»†ä¿¡æ¯ï¼Œç”¨äºè®°å½•åŒ…å«å¼‚å¸¸è¯¦ç»†ä¿¡æ¯çš„é”™è¯¯ã€‚
+
+**å‚æ•°**
+
+- `ex` (Exception): ç›¸å…³çš„å¼‚å¸¸å¯¹è±¡
+- `message` (string): è¦è®°å½•çš„é”™è¯¯æè¿°ä¿¡æ¯
+
+**è°ƒç”¨ç¤ºä¾‹**
+
+```c#
+try
+{
+    // å¯èƒ½æŠ›å‡ºå¼‚å¸¸çš„ä»£ç 
+    var result = ProcessData(input);
+}
+catch (ArgumentNullException ex)
+{
+    Log.Error(ex, "æ•°æ®å¤„ç†å¤±è´¥ï¼šè¾“å…¥å‚æ•°ä¸ºç©º");
+}
+catch (FormatException ex)
+{
+    Log.Error(ex, "æ•°æ®æ ¼å¼è½¬æ¢å¤±è´¥");
+}
+catch (IOException ex)
+{
+    Log.Error(ex, "æ–‡ä»¶è¯»å†™æ“ä½œå¤±è´¥");
+}
+catch (Exception ex)
+{
+    Log.Error(ex, "å¤„ç†è¿‡ç¨‹ä¸­å‘ç”ŸæœªçŸ¥é”™è¯¯");
+}
+```
+
+**è¾“å‡ºç¤ºä¾‹**
+
+```tex
+2025-12-01 15:02:46.1234 [ERROR] DataProcessor.Process - æ•°æ®å¤„ç†å¤±è´¥ï¼šè¾“å…¥å‚æ•°ä¸ºç©º 
+System.ArgumentNullException: å€¼ä¸èƒ½ä¸º nullã€‚
+å‚æ•°å: input
+   åœ¨ DataProcessor.ValidateInput(String input) ä½ç½® DataProcessor.cs:è¡Œå· 42
+   åœ¨ DataProcessor.Process(String input) ä½ç½® DataProcessor.cs:è¡Œå· 25
+
+2025-12-01 15:02:47.2345 [ERROR] Converter.ConvertToInt - æ•°æ®æ ¼å¼è½¬æ¢å¤±è´¥ 
+System.FormatException: è¾“å…¥å­—ç¬¦ä¸²çš„æ ¼å¼ä¸æ­£ç¡®ã€‚
+   åœ¨ System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   åœ¨ Converter.ConvertToInt(String value) ä½ç½® Converter.cs:è¡Œå· 18
+
+2025-12-01 15:02:48.3456 [ERROR] FileService.ReadFile - æ–‡ä»¶è¯»å†™æ“ä½œå¤±è´¥ 
+System.IO.IOException: æ–‡ä»¶ 'C:\data\config.json' æ­£ç”±å¦ä¸€è¿›ç¨‹ä½¿ç”¨ï¼Œå› æ­¤è¯¥è¿›ç¨‹æ— æ³•è®¿é—®æ­¤æ–‡ä»¶ã€‚
+   åœ¨ System.IO.FileStream.ValidateFileHandle(SafeFileHandle fileHandle)
+   åœ¨ FileService.ReadFile(String path) ä½ç½® FileService.cs:è¡Œå· 33
+```
+
+##### `Fatal(string message)`
+
+**æè¿°**
+è®°å½• Fatal çº§åˆ«çš„æ—¥å¿—æ¶ˆæ¯ï¼Œç”¨äºè®°å½•å¯¼è‡´åº”ç”¨ç¨‹åºæ— æ³•ç»§ç»­è¿è¡Œçš„ä¸¥é‡é”™è¯¯ã€‚
+
+**å‚æ•°**
+
+- `message` (string): è¦è®°å½•çš„ä¸¥é‡é”™è¯¯ä¿¡æ¯
+
+**è°ƒç”¨ç¤ºä¾‹**
+
+```c#
+// è®°å½•è‡´å‘½é”™è¯¯
+Log.Fatal("æ•°æ®åº“è¿æ¥å®Œå…¨å¤±è´¥ï¼Œåº”ç”¨ç¨‹åºæ— æ³•å¯åŠ¨");
+Log.Fatal("å…³é”®é…ç½®æ–‡ä»¶ç¼ºå¤±ï¼Œç³»ç»Ÿæ— æ³•è¿è¡Œ");
+Log.Fatal("ç³»ç»Ÿå†…å­˜è€—å°½ï¼Œåº”ç”¨ç¨‹åºå³å°†å´©æºƒ");
+Log.Fatal("æœªå¤„ç†çš„å¼‚å¸¸å¯¼è‡´åº”ç”¨ç¨‹åºç»ˆæ­¢");
+```
+
+**è¾“å‡ºç¤ºä¾‹**
+
+```tex
+2025-12-01 15:02:46.1234 [FATAL] Program.Main - æ•°æ®åº“è¿æ¥å®Œå…¨å¤±è´¥ï¼Œåº”ç”¨ç¨‹åºæ— æ³•å¯åŠ¨
+2025-12-01 15:02:47.2345 [FATAL] ConfigManager.Initialize - å…³é”®é…ç½®æ–‡ä»¶ç¼ºå¤±ï¼Œç³»ç»Ÿæ— æ³•è¿è¡Œ
+2025-12-01 15:02:48.3456 [FATAL] MemoryManager.Allocate - ç³»ç»Ÿå†…å­˜è€—å°½ï¼Œåº”ç”¨ç¨‹åºå³å°†å´©æºƒ
+2025-12-01 15:02:49.4567 [FATAL] GlobalExceptionHandler.Handle - æœªå¤„ç†çš„å¼‚å¸¸å¯¼è‡´åº”ç”¨ç¨‹åºç»ˆæ­¢
+```
+
+#### å…¨å±€æ•è·å¼‚å¸¸
+
+å¯¹äºæ²¡æ•è·çš„å¼‚å¸¸è®°å½•ï¼Œæˆ‘ä»¬å¯ä»¥è¯•ç€åœ¨å…¨å±€å¼‚å¸¸æ•è·ä¸­è®°å½•æœªå¤„ç†çš„å¼‚å¸¸ï¼Œæ–¹ä¾¿ä»¥ååœ¨æ—¥å¿—ä¸­æŸ¥çœ‹æœªçŸ¥å¼‚å¸¸
+
+##### 1. æ§åˆ¶å°åº”ç”¨ç¨‹åº
+
+```c#
+using System;
+using System.Threading.Tasks;
+using HaiTang.library;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        try
+        {
+            // è®¾ç½®å…¨å±€å¼‚å¸¸å¤„ç†
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+            {
+                var exception = e.ExceptionObject as Exception;
+                if (exception != null)
+                {
+                    Log.Fatal($"æœªå¤„ç†çš„åº”ç”¨ç¨‹åºåŸŸå¼‚å¸¸ï¼Œåº”ç”¨ç¨‹åºå°†{(e.IsTerminating ? "ç»ˆæ­¢" : "ç»§ç»­")}");
+                    Log.Error(exception, "å¼‚å¸¸è¯¦æƒ…");
+                }
+                
+                Console.WriteLine("å‘ç”Ÿä¸¥é‡é”™è¯¯ï¼Œè¯·æŸ¥çœ‹æ—¥å¿—æ–‡ä»¶ã€‚");
+            };
+
+            // å¤„ç†å¼‚æ­¥ä»»åŠ¡å¼‚å¸¸
+            TaskScheduler.UnobservedTaskException += (sender, e) =>
+            {
+                e.SetObserved(); // é¿å…è¿›ç¨‹å´©æºƒ
+                Log.Error(e.Exception, "æœªè§‚å¯Ÿåˆ°çš„å¼‚æ­¥ä»»åŠ¡å¼‚å¸¸");
+            };
+
+            Log.Info("æ§åˆ¶å°åº”ç”¨ç¨‹åºå¯åŠ¨");
+            
+            // æ¨¡æ‹Ÿä¸šåŠ¡é€»è¾‘
+            RunApplication();
+            
+            Log.Info("åº”ç”¨ç¨‹åºæ­£å¸¸ç»“æŸ");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "ä¸»çº¿ç¨‹å¼‚å¸¸");
+            Console.WriteLine($"åº”ç”¨ç¨‹åºå¼‚å¸¸ï¼š{ex.Message}");
+        }
+    }
+
+    static void RunApplication()
+    {
+        // æ­£å¸¸ä¸šåŠ¡ä»£ç 
+        Log.Debug("æ‰§è¡Œä¸šåŠ¡é€»è¾‘");
+        
+        // æ¨¡æ‹Ÿä¸€ä¸ªä¼šæŠ›å‡ºå¼‚å¸¸çš„æ“ä½œ
+        Console.WriteLine("è¯·è¾“å…¥ä¸€ä¸ªæ•°å­—è¿›è¡Œæµ‹è¯•ï¼š");
+        var input = Console.ReadLine();
+        
+        // è§¦å‘ä¸€ä¸ªå¼‚å¸¸ï¼ˆä¼šè¢«å…¨å±€å¼‚å¸¸å¤„ç†å™¨æ•è·ï¼‰
+        Task.Run(() =>
+        {
+            throw new InvalidOperationException("åå°ä»»åŠ¡ä¸­çš„å¼‚å¸¸");
+        });
+
+        // ä¸»çº¿ç¨‹ä¸­æ•…æ„æŠ›å‡ºå¼‚å¸¸
+        if (string.IsNullOrEmpty(input))
+        {
+            throw new ArgumentNullException(nameof(input), "è¾“å…¥ä¸èƒ½ä¸ºç©º");
+        }
+    }
+}
+```
+
+##### 2. WinForms åº”ç”¨ç¨‹åº
+
+```c#
+using System;
+using System.Windows.Forms;
+using HaiTang.library;
+
+namespace WinFormsApp
+{
+    static class Program
+    {
+        [STAThread]
+        static void Main()
+        {
+            // è®¾ç½®UIçº¿ç¨‹å¼‚å¸¸å¤„ç†
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            Application.ThreadException += (sender, e) =>
+            {
+                Log.Error(e.Exception, "UIçº¿ç¨‹æœªå¤„ç†å¼‚å¸¸");
+                MessageBox.Show($"å‘ç”Ÿé”™è¯¯ï¼š{e.Exception.Message}\n\nè¯¦ç»†ä¿¡æ¯å·²è®°å½•åˆ°æ—¥å¿—ã€‚",
+                    "ç³»ç»Ÿé”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            };
+
+            // è®¾ç½®éUIçº¿ç¨‹å¼‚å¸¸å¤„ç†
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+            {
+                var exception = e.ExceptionObject as Exception;
+                if (exception != null)
+                {
+                    Log.Fatal($"éUIçº¿ç¨‹æœªå¤„ç†å¼‚å¸¸ï¼Œåº”ç”¨ç¨‹åºå°†{(e.IsTerminating ? "ç»ˆæ­¢" : "ç»§ç»­")}");
+                    Log.Error(exception, "å¼‚å¸¸è¯¦æƒ…");
+                }
+            };
+
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            
+            Log.Info("WinFormsåº”ç”¨ç¨‹åºå¯åŠ¨");
+            Application.Run(new MainForm());
+            Log.Info("WinFormsåº”ç”¨ç¨‹åºç»“æŸ");
+        }
+    }
+
+    public partial class MainForm : Form
+    {
+        public MainForm()
+        {
+            InitializeComponent();
+            
+            // æ·»åŠ ä¸€ä¸ªä¼šæŠ›å‡ºå¼‚å¸¸çš„æŒ‰é’®
+            var btnThrow = new Button
+            {
+                Text = "ç‚¹å‡»æŠ›å‡ºå¼‚å¸¸",
+                Location = new System.Drawing.Point(20, 20),
+                Size = new System.Drawing.Size(150, 30)
+            };
+            
+            btnThrow.Click += (sender, e) =>
+            {
+                try
+                {
+                    throw new InvalidOperationException("æŒ‰é’®ç‚¹å‡»è§¦å‘çš„å¼‚å¸¸");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "æŒ‰é’®ç‚¹å‡»å¼‚å¸¸");
+                    MessageBox.Show($"æ“ä½œå¤±è´¥ï¼š{ex.Message}");
+                }
+            };
+            
+            this.Controls.Add(btnThrow);
+        }
+    }
+}
+```
+
+##### 3. WPF åº”ç”¨ç¨‹åº
+
+```xaml
+<!-- App.xaml -->
+<Application x:Class="WpfApp.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Startup="Application_Startup"
+             DispatcherUnhandledException="Application_DispatcherUnhandledException"
+             Exit="Application_Exit">
+</Application>
+```
+
+```c#
+using System;
+using System.Windows;
+using System.Windows.Threading;
+using HaiTang.library;
+
+namespace WpfApp
+{
+    public partial class App : Application
+    {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            
+            // åº”ç”¨ç¨‹åºåŸŸå¼‚å¸¸å¤„ç†
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+            {
+                var exception = args.ExceptionObject as Exception;
+                if (exception != null)
+                {
+                    Log.Fatal($"åº”ç”¨ç¨‹åºåŸŸæœªå¤„ç†å¼‚å¸¸ï¼Œåº”ç”¨ç¨‹åºå°†{(args.IsTerminating ? "ç»ˆæ­¢" : "ç»§ç»­")}");
+                    Log.Error(exception, "å¼‚å¸¸è¯¦æƒ…");
+                }
+            };
+
+            // å¼‚æ­¥ä»»åŠ¡å¼‚å¸¸å¤„ç†
+            TaskScheduler.UnobservedTaskException += (sender, args) =>
+            {
+                args.SetObserved();
+                Log.Error(args.Exception, "æœªè§‚å¯Ÿåˆ°çš„å¼‚æ­¥ä»»åŠ¡å¼‚å¸¸");
+            };
+
+            Log.Info("WPFåº”ç”¨ç¨‹åºå¯åŠ¨");
+            
+            // åˆ›å»ºä¸»çª—å£
+            var mainWindow = new MainWindow();
+            mainWindow.Show();
+        }
+
+        private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            e.Handled = true; // é˜»æ­¢åº”ç”¨ç¨‹åºå´©æºƒ
+            
+            Log.Error(e.Exception, "UIçº¿ç¨‹æœªå¤„ç†å¼‚å¸¸");
+            
+            var result = MessageBox.Show(
+                $"å‘ç”Ÿé”™è¯¯ï¼š{e.Exception.Message}\n\næ˜¯å¦ç»§ç»­è¿è¡Œåº”ç”¨ç¨‹åºï¼Ÿ",
+                "åº”ç”¨ç¨‹åºé”™è¯¯",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Error);
+            
+            if (result == MessageBoxResult.No)
+            {
+                Shutdown(1);
+            }
+        }
+
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            Log.Info("WPFåº”ç”¨ç¨‹åºé€€å‡º");
+        }
+    }
+
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+            Log.Info("ä¸»çª—å£åˆå§‹åŒ–å®Œæˆ");
+            
+            // æ·»åŠ æŠ›å‡ºå¼‚å¸¸çš„æŒ‰é’®
+            var btnThrow = new System.Windows.Controls.Button
+            {
+                Content = "ç‚¹å‡»æŠ›å‡ºå¼‚å¸¸",
+                Width = 150,
+                Height = 30,
+                Margin = new Thickness(20)
+            };
+            
+            btnThrow.Click += (sender, e) =>
+            {
+                try
+                {
+                    throw new InvalidOperationException("WPFæŒ‰é’®ç‚¹å‡»å¼‚å¸¸");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "æŒ‰é’®ç‚¹å‡»å¼‚å¸¸");
+                    MessageBox.Show($"æ“ä½œå¤±è´¥ï¼š{ex.Message}", "é”™è¯¯", 
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            };
+            
+            this.Content = btnThrow;
+        }
+    }
+}
+```
+
+### AESåŠ å¯†ç±»æ–¹æ³•
+
+#### 1.AESåŠ å¯†ç±» è‡ªåŠ¨IV
+
+```c#
+AutoAesHelper.Encrypt(string plainText,string key);		// AESåŠ å¯†
+AutoAesHelper.Decrypt(string combinedData, string key);	// AESè§£å¯†
+```
+
+#### 2.AESåŠ å¯†ç±» è‡ªåŠ¨IVå¸¦ç›å€¼å’Œå¯†ç 
+
+```c#
+SaltAesHelper.Encrypt(string plainText, string password, string salt);	// AESåŠ å¯†
+SaltAesHelper.Decrypt(string cipherText, string password, string salt);	// AESè§£å¯†
+```
+
+## æ³¨æ„äº‹é¡¹
+
+1. **åˆå§‹åŒ–é¡ºåº**: è°ƒç”¨å…·ä½“æ–¹æ³•å‰éœ€è¦å…ˆè°ƒç”¨å¯¹åº”çš„åˆå§‹åŒ–æ–¹æ³•
+2. **å¼‚æ­¥æ“ä½œ**: æ‰€æœ‰APIè°ƒç”¨éƒ½æ˜¯å¼‚æ­¥çš„ï¼Œéœ€è¦ä½¿ç”¨ `await`
+3. **é”™è¯¯å¤„ç†**: å»ºè®®å¯¹æ¯ä¸ªAPIè°ƒç”¨è¿›è¡Œå¼‚å¸¸æ•è·
+4. **ç½‘ç»œçŠ¶æ€**: åœ¨ç½‘ç»œä¸ç¨³å®šæ—¶å¯èƒ½æœ‰é‡è¯•æœºåˆ¶
+5. **ç¼“å­˜**: æ³¨æ„ç¼“å­˜å¯èƒ½å¯¼è‡´æ•°æ®ä¸æ˜¯å®æ—¶æœ€æ–°çš„
+6. **çº¿ç¨‹å®‰å…¨**: å¤§å¤šæ•°æ–¹æ³•æ˜¯çº¿ç¨‹å®‰å…¨çš„ï¼Œä½†å»ºè®®é¿å…å¹¶å‘åˆå§‹åŒ–
+
+## ç¤ºä¾‹ä»£ç 
+
+### å®Œæ•´è½¯ä»¶éªŒè¯æµç¨‹
+
+```c#
 var update = new Update();
 
-// 1. ³õÊ¼»¯²¢¼ì²éÈí¼ş×´Ì¬
+// 1. åˆå§‹åŒ–å¹¶æ£€æŸ¥è½¯ä»¶çŠ¶æ€
 var softwareInfo = await update.InitializationAsync("your_software_id", "your_developer_key");
 if (softwareInfo == null)
 {
-    Console.WriteLine("Èí¼ş³õÊ¼»¯Ê§°Ü");
+    Console.WriteLine("è½¯ä»¶åˆå§‹åŒ–å¤±è´¥");
     return;
 }
 
-// 2. ¼ì²é¿¨ÃÜ×´Ì¬
+// 2. æ£€æŸ¥å¡å¯†çŠ¶æ€
 if (await update.GetIsItEffective())
 {
-    Console.WriteLine("¿¨ÃÜÓĞĞ§");
+    Console.WriteLine("å¡å¯†æœ‰æ•ˆ");
     
-    // 3. »ñÈ¡Èí¼şĞÅÏ¢
+    // 3. è·å–è½¯ä»¶ä¿¡æ¯
     string version = await update.GetVersionNumberl();
     string notice = await update.GetNotice();
     
-    // 4. ¼ì²éÊÇ·ñĞèÒª¸üĞÂ
+    // 4. æ£€æŸ¥æ˜¯å¦éœ€è¦æ›´æ–°
     if (await update.GetMandatoryUpdate())
     {
         string downloadLink = await update.GetDownloadLink();
         Update.upgrade(downloadLink);
+        // é€€å‡ºå½“å‰åº”ç”¨ç¨‹åº
+		Application.Exit();
     }
 }
 else
 {
-    Console.WriteLine("¿¨ÃÜÎŞĞ§»òÒÑ¹ıÆÚ");
+    Console.WriteLine("å¡å¯†æ— æ•ˆæˆ–å·²è¿‡æœŸ");
 }
 ```
 
- **ÓÃ»§µÇÂ¼ºÍ³äÖµ** 
+### ç”¨æˆ·ç™»å½•å’Œå……å€¼
 
-```csharp
-// 1. ÓÃ»§³õÊ¼»¯
+```c#
+// 1. ç”¨æˆ·åˆå§‹åŒ–
 var userInfo = await update.InitializationUserAsync("software_id", "developer_key", "email", "password");
 
-// 2. »ñÈ¡ÓÃ»§ĞÅÏ¢
+// 2. è·å–ç”¨æˆ·ä¿¡æ¯
 string nickname = await update.GetUserNickname();
 string balance = await update.GetUserBalance();
 
-// 3. ¿¨ÃÜ³äÖµ
+// 3. å¡å¯†å……å€¼
 string rechargeResult = await update.Recharge("card_id");
 ```
 
-Õâ¸öµ÷ÓÃÊÖ²áº­¸ÇÁË HaiTang.library.Update ÀàµÄÖ÷Òª¹«¿ªAPI·½·¨£¬°üÀ¨²ÎÊıËµÃ÷¡¢·µ»ØÖµËµÃ÷ºÍÊ¹ÓÃÊ¾Àı¡£Ê¹ÓÃÊ±Çë¸ù¾İÊµ¼ÊĞèÇóÑ¡ÔñºÏÊÊµÄAPI·½·¨¡£
+è¿™ä¸ªè°ƒç”¨æ‰‹å†Œæ¶µç›–äº† HaiTang.library.Update ç±»çš„ä¸»è¦å…¬å¼€ API æ–¹æ³•ï¼ŒåŒ…æ‹¬å‚æ•°è¯´æ˜ã€è¿”å›å€¼è¯´æ˜å’Œä½¿ç”¨ç¤ºä¾‹ã€‚ä½¿ç”¨æ—¶è¯·æ ¹æ®å®é™…éœ€æ±‚é€‰æ‹©åˆé€‚çš„APIæ–¹æ³•ã€‚

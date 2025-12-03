@@ -81,6 +81,9 @@ namespace HaiTang.library.Models
         public string bilibiliLink { get; set; } = "https://space.bilibili.com/3493128132626725";
 
     }
+    /// <summary>
+    /// 用户信息模型
+    /// </summary>
     public class UserInfo
     {
         public string CustomerId { get; set; } = string.Empty;

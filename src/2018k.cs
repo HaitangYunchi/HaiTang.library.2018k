@@ -211,6 +211,7 @@ namespace HaiTang.library
             }
             catch (Exception ex)
             {
+                Log.Error(ex, "启动更新程序失败");
                 throw new Exception($"启动更新程序失败: {ex.Message}");
             }
         }
@@ -334,7 +335,7 @@ namespace HaiTang.library
         /// 获取软件版本
         /// </summary>
         /// <returns>string 返回软件版本号</returns>
-        public async Task<string> GetVersionNumberl()
+        public async Task<string> GetVersionNumber()
         {
             var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.versionNumber ?? _error;
@@ -565,6 +566,7 @@ namespace HaiTang.library
             }
             catch
             {
+                Log.Error("修改云变量失败,网络异常或程序错误");
                 return (false, "失败，网络异常或程序错误");
             }
         }
@@ -592,6 +594,7 @@ namespace HaiTang.library
             }
             catch
             {
+                Log.Error("激活失败,网络异常或程序错误");
                 return (false, "激活失败，网络异常或程序错误");
             }
         }
@@ -672,7 +675,7 @@ namespace HaiTang.library
         }
 
         /// <summary>
-        /// 解绑、换绑  (卡密ID，机器码)
+        /// 解绑、换绑 机器码为空则解绑 (卡密ID，机器码)
         /// </summary>
         /// <param name="AuthId">卡密ID</param>
         /// <param name="Code">机器码</param>
@@ -705,7 +708,8 @@ namespace HaiTang.library
             }
             catch
             {
-                return (false, "解绑失败，网络异常或程序错误");
+                Log.Error("解绑|换绑失败,网络异常或程序错误");
+                return (false, "解绑|换绑失败，网络异常或程序错误");
             }
         }
 
@@ -1087,6 +1091,7 @@ namespace HaiTang.library
             }
             catch (Exception ex)
             {
+                Log.Error($"程序异常: {ex.Message}");
                 return $"程序异常: {ex.Message}";
             }
 
@@ -1153,6 +1158,7 @@ namespace HaiTang.library
             catch (Exception ex)
             {
                 // 记录错误日志（如果需要）
+                Log.Error($"获取软件信息失败: {ex.Message}");
                 Console.WriteLine($"获取软件信息失败: {ex.Message}");
                 return null;
             }
@@ -1293,6 +1299,7 @@ namespace HaiTang.library
             catch
             {
                 // 如果检查过程中出现异常，保守返回false
+                Log.Error("检查网络连接状态时出现异常");
                 return false;
             }
         }
@@ -1441,16 +1448,19 @@ namespace HaiTang.library
             catch (Exception ex) when (ex is TaskCanceledException || ex is OperationCanceledException)
             {
                 // 超时
+                Log.Error("API健康检测超时");
                 return false;
             }
             catch (HttpRequestException)
             {
                 // 网络请求异常
+                Log.Error("API健康检测网络请求异常");
                 return false;
             }
             catch
             {
                 // 其他异常
+                Log.Error("API健康检测出现未知异常");
                 return false;
             }
         }
@@ -1601,7 +1611,10 @@ namespace HaiTang.library
             // Base64解码
             byte[] cipherData = Convert.FromBase64String(encryptedText);
             if (cipherData.Length < 16)
+            {
+                Log.Error("无效的加密文本");
                 throw new ArgumentException("Invalid encrypted text");
+            }             
 
             // 提取salt（8字节，从索引8开始）
             byte[] saltData = new byte[8];
@@ -1642,6 +1655,7 @@ namespace HaiTang.library
         {
             if (hex.Length % 2 != 0)
             {
+                Log.Error("十六进制字符串长度必须是偶数");
                 throw new ArgumentException("十六进制字符串长度必须是偶数");
             }
 
