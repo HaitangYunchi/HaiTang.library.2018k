@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <PackageId>$(AssemblyName).2018k</PackageId>
     <Title>$(AssemblyName).2018k</Title>
-    <Version>1.4.2</Version>
+    <Version>1.4.3</Version>
     <Authors>HaiTangYunchi</Authors>
     <Product>$(AssemblyName).2018k</Product>
     <Description>提供与软件更新、用户管理、卡密验证、云变量操作等相关的 API 封装方法。
@@ -17,10 +17,18 @@
     <IncludeSymbols>False</IncludeSymbols>
     <SymbolPackageFormat>symbols.nupkg</SymbolPackageFormat>
     <RepositoryUrl>https://gitee.com/haitangyunchi/HaiTang.library.2018k.git</RepositoryUrl>
-    <PackageTags>HaiTangYunchi;HaiTang.library;HaiTang.library.2018;Update</PackageTags>
+    <PackageTags>HaiTangYunchi;HaiTang.library;HaiTang.library.2018k;Update;haitang;yunchi;haitangyunhci</PackageTags>
     <Copyright>Copyright © 2025 HaiTangYunchi. All rights reserved.</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

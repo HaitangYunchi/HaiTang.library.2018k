@@ -2,7 +2,7 @@
 
 ## 概述
 
-HaiTang.library.Update 类提供了与 [2018k](https://gitee.com/link?target=http%3A%2F%2F2018k.cn) API 接口的完整封装，包括软件更新、用户管理、卡密验证、云变量操作等功能。本库支持多 API 地址故障转移、健康检测和加密通信。
+HaiTang.library.Update 类提供了与 [2018k](http://2018k.cn) API 接口的完整封装，包括软件更新、用户管理、卡密验证、云变量操作等功能。本库支持多 API 地址故障转移、健康检测和加密通信。
 
 ## 快速开始
 
