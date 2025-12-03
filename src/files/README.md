@@ -37,16 +37,27 @@ bool isValid = await update.GetSoftCheck("软件ID", "开发者密钥", "可选�
 
 ### 2. 获取软件信息
 
-#### 获取全部信息
+#### 初始化后直接调用
 
 ```c#
-string allInfo = await update.GetSoftAll();
-// 返回格式化的JSON字符串
+var update = new Update();
+var softwareInfo = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");
+
+string softwareId = softwareInfo.softwareId;        	// 实例ID
+string version = softwareInfo.versionNumber;       		// 版本号
+string name = softwareInfo.softwareName;            	// 软件名称
+string updateInfo = softwareInfo.versionInformation; 	// 更新内容
+string notice = softwareInfo.notice;                	// 公告
+string downloadLink = softwareInfo.downloadLink;    	// 下载链接
+int visits = softwareInfo.numberOfVisits;        		// 访问量
+bool isItEffective = softwareInfo.isItEffective ;       // 是否激活
+long expirationDate = softwareInfo.expirationDate;		// 过期时间戳(毫秒)
 ```
 
-#### 获取特定信息
+#### 方法获取特定信息
 
 ```c#
+string allInfo = await update.GetSoftAll();					// 返回格式化的JSON字符串
 string softwareId = await update.GetSoftwareID();        	// 实例ID
 string version = await update.GetVersionNumber();       	// 版本号
 string name = await update.GetSoftwareName();            	// 软件名称
@@ -134,7 +145,7 @@ var (success, message) = await update.updateCloudVariables("变量名", "新值"
 
 ```c#
 string response = await update.MessageSend("需要发送的消息");
-// 返回服务器响应JSON
+// 返回服务器响应JSON 无实际意义
 ```
 
 #### 检查强制更新
@@ -166,7 +177,7 @@ long remainingTime = await update.GetRemainingUsageTime();
 ### 1. 用户注册
 
 ```c#
-bool success = await update.CustomerRegister("email@example.com", "password", "昵称", "头像URL", "验证码");
+bool success = await update.CustomerRegister("email", "password", "nickName", "avatarUrl", "captcha");
 ```
 
 - **参数**:
@@ -236,11 +247,11 @@ string result = await update.Recharge("卡密ID");
 ### 网络检查
 
 - 自动检测网络连接状态
-- 网络不可用时使用本地地址
+- 网络不可用时返回 string.Empty;
 
 ## 工具方法
 
-### 常用方法
+### 1.常用方法
 
 ```c#
 Tools.GetMachineCodeEx();  							// 获取机器码
@@ -250,6 +261,22 @@ Tools.GenerateSalt(int length = 64);  				// 生成随机盐值，默认为64字
 Hasher.Sha256(string input);						// 生成SHA256哈希值
 Hasher.Sha512(string input);						// 生成SHA512哈希值
 ```
+
+### 2.AES加密 自动IV
+
+```c#
+Tools.Encrypt(string plainText,string key);		// AES加密
+Tools.Decrypt(string cipherText, string key);	// AES解密
+```
+
+### 3.AES加密 自动IV带盐值和密码
+
+```c#
+Tools.Encrypt(string plainText, string password, string salt);	// AES加密
+Tools.Decrypt(string cipherText, string password, string salt);	// AES解密
+```
+
+## 
 
 ### Log日志类方法
 
@@ -285,7 +312,7 @@ Log.Debug("内存使用情况: {used}/{total} MB", usedMemory, totalMemory);
 **输出示例**
 
 ```tex
-2025-12-01 15:02:46.1234 [DEBUG] UserController.GetUser - 开始处理用户请求，参数: 12345
+2025-12-01 15:02:46.1234 [DEBUG] UserController.GetUser - 开始处理用户请求，参数: 2345
 2025-12-01 15:02:47.2345 [DEBUG] CacheManager.GetData - 缓存命中率: 85.5%
 2025-12-01 15:02:48.3456 [DEBUG] MemoryMonitor.Check - 内存使用情况: 512/1024 MB
 ```
@@ -721,22 +748,6 @@ namespace WpfApp
 }
 ```
 
-### AES加密类方法
-
-#### 1.AES加密类 自动IV
-
-```c#
-AutoAesHelper.Encrypt(string plainText,string key);		// AES加密
-AutoAesHelper.Decrypt(string combinedData, string key);	// AES解密
-```
-
-#### 2.AES加密类 自动IV带盐值和密码
-
-```c#
-SaltAesHelper.Encrypt(string plainText, string password, string salt);	// AES加密
-SaltAesHelper.Decrypt(string cipherText, string password, string salt);	// AES解密
-```
-
 ## 注意事项
 
 1. **初始化顺序**: 调用具体方法前需要先调用对应的初始化方法
@@ -767,7 +778,7 @@ if (await update.GetIsItEffective())
     Console.WriteLine("卡密有效");
     
     // 3. 获取软件信息
-    string version = await update.GetVersionNumberl();
+    string version = await update.GetVersionNumber();
     string notice = await update.GetNotice();
     
     // 4. 检查是否需要更新

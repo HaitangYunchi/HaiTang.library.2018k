@@ -33,7 +33,7 @@ namespace HaiTang.library.Models
         /// 原始JSON数据模型（从网络获取）
         /// </summary>
         public string author { get; set; } = string.Empty;
-        public string mandatoryUpdate { get; set; } = string.Empty;
+          public string mandatoryUpdate { get; set; } = string.Empty;
         public string softwareMd5 { get; set; } = string.Empty;
         public string softwareName { get; set; } = string.Empty;
         public string notice { get; set; } = string.Empty;
