@@ -22,6 +22,7 @@
 
 
 using HaiTang.library.Utils;
+using System.Diagnostics;
 using System.Management;
 using System.Security.Cryptography;
 using System.Text;
@@ -33,6 +34,42 @@ namespace HaiTang.library
     {
         private static readonly Random _random = new();
         #region 公有方法
+
+        /// <summary>
+        /// 更新程序
+        /// </summary>
+        /// <param name="downloadUrl">下载地址</param>
+        public static void upgrade(string downloadUrl)
+        {
+            try
+            {
+                string mainAssemblyPath = Process.GetCurrentProcess().MainModule.FileName;
+                string updaterExePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "upgrade.exe");
+
+                // 检查更新程序是否存在
+                if (!System.IO.File.Exists(updaterExePath))
+                {
+                    return;
+                }
+
+                // 启动更新程序，传递参数
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = updaterExePath,
+                    Arguments = $"\"{downloadUrl}\" \"{mainAssemblyPath}\"",
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                Process.Start(startInfo);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "启动更新程序失败");
+                throw new Exception($"启动更新程序失败: {ex.Message}");
+            }
+        }
+
         /// <summary>
         /// 获取机器码 cpu+主板+64位盐值 进行验证
         /// </summary>

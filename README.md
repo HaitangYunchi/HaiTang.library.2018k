@@ -11,7 +11,8 @@ HaiTang.library.Update 类提供了与 [2018k](http://2018k.cn) API 接口的完
 #### **软件实例初始化**
 
 ```c#
-var update = new Update();
+using HaiTang.library;
+Update update = new();  // 实例化更新对象
 var softwareInfo = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");
 ```
 
@@ -40,7 +41,8 @@ bool isValid = await update.GetSoftCheck("软件ID", "开发者密钥", "可选�
 #### 初始化后直接调用
 
 ```c#
-var update = new Update();
+using HaiTang.library;
+Update update = new();  // 实例化更新对象
 var softwareInfo = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");
 
 string softwareId = softwareInfo.softwareId;        	// 实例ID
@@ -216,39 +218,6 @@ string result = await update.Recharge("卡密ID");
 // 返回服务器响应JSON
 ```
 
-## 缓存机制
-
-### 软件信息缓存
-
-- 缓存时间: 5分钟
-- 相关方法:
-  - `GetCachedSoftwareInfo()`: 获取缓存
-  - `SetCachedSoftwareInfo()`: 设置缓存
-  - `IsCacheValid()`: 检查缓存有效性
-  - `ClearStaticCache()`: 清除缓存
-
-### 用户信息缓存
-
-- 缓存时间: 5分钟
-- 相关方法:
-  - `GetCachedUserInfo()`: 获取缓存
-  - `SetCachedUserInfo()`: 设置缓存
-  - `IsUserCacheValid()`: 检查缓存有效性
-  - `ClearUserCache()`: 清除缓存
-
-## 故障转移机制
-
-### 健康检测
-
-- 自动检测 API 地址健康状态
-- 5分钟缓存检测结果
-- 支持多个备用地址自动切换
-
-### 网络检查
-
-- 自动检测网络连接状态
-- 网络不可用时返回 string.Empty;
-
 ## 工具方法
 
 ### 1.常用方法
@@ -260,23 +229,28 @@ Tools.GenerateRandomString(int length,int type);	// 生成随机字符
 Tools.GenerateSalt(int length = 64);  			// 生成随机盐值，默认为64字节
 Tools.Sha256(string input);				// 生成SHA256哈希值
 Tools.Sha512(string input);				// 生成SHA512哈希值
+Tools.upgrade(string downloadLink);		        // 启动更新程序
 ```
 
-### 2.AES加密 自动IV
+### 2.程序更新
+
+```c#
+Tools.upgrade(string downloadLink);	// 启动更新程序
+```
+
+### 3.AES加密 自动IV
 
 ```c#
 Tools.Encrypt(string plainText,string key);	// AES加密
 Tools.Decrypt(string cipherText, string key);	// AES解密
 ```
 
-### 3.AES加密 自动IV带盐值和密码
+### 4.AES加密 自动IV带盐值和密码
 
 ```c#
 Tools.Encrypt(string plainText, string password, string salt);	// AES加密
 Tools.Decrypt(string cipherText, string password, string salt);	// AES解密
 ```
-
-## 
 
 ### Log日志类方法
 
@@ -304,9 +278,9 @@ Log 类是一个静态日志工具类，提供按天分割的日志文件记录�
 
 ```c#
 // 记录调试信息
-Log.Debug("开始处理用户请求，参数: {param}", userId);
-Log.Debug("缓存命中率: {rate}%", cacheHitRate);
-Log.Debug("内存使用情况: {used}/{total} MB", usedMemory, totalMemory);
+Log.Debug("开始处理用户请求，参数: {param}");
+Log.Debug("缓存命中率: {rate}%");
+Log.Debug("内存使用情况: {used}/{total} MB");
 ```
 
 **输出示例**
@@ -332,8 +306,8 @@ Log.Debug("内存使用情况: {used}/{total} MB", usedMemory, totalMemory);
 // 记录应用程序状态信息
 Log.Info("应用程序启动成功");
 Log.Info("用户 'admin' 登录系统");
-Log.Info("数据库连接池初始化完成，连接数: {count}", connectionCount);
-Log.Info("定时任务执行完成，耗时: {elapsed}ms", elapsedTime);
+Log.Info("数据库连接池初始化完成，连接数: {count}");
+Log.Info("定时任务执行完成，耗时: {elapsed}ms");
 ```
 
 **输出示例**
@@ -358,10 +332,10 @@ Log.Info("定时任务执行完成，耗时: {elapsed}ms", elapsedTime);
 
 ```c#
 // 记录警告信息
-Log.Warn("数据库连接池使用率过高: {percentage}%", usagePercentage);
-Log.Warn("API响应时间超过阈值: {time}ms (阈值: {threshold}ms)", responseTime, threshold);
-Log.Warn("配置文件 {file} 不存在，使用默认配置", configFile);
-Log.Warn("磁盘空间不足，剩余: {freeSpace}GB", freeSpace);
+Log.Warn("数据库连接池使用率过高: {percentage}%");
+Log.Warn("API响应时间超过阈值: {time}ms (阈值: {threshold}ms)");
+Log.Warn("配置文件 {file} 不存在，使用默认配置");
+Log.Warn("磁盘空间不足，剩余: {freeSpace}GB");
 ```
 
 **输出示例**
@@ -387,9 +361,9 @@ Log.Warn("磁盘空间不足，剩余: {freeSpace}GB", freeSpace);
 ```c#
 // 记录错误信息（无异常）
 Log.Error("文件上传失败：文件大小超过限制");
-Log.Error("用户权限验证失败，用户ID: {userId}", userId);
-Log.Error("API请求失败，HTTP状态码: {statusCode}", statusCode);
-Log.Error("数据验证失败，字段 '{field}' 格式错误", fieldName);
+Log.Error("用户权限验证失败，用户ID: {userId}");
+Log.Error("API请求失败，HTTP状态码: {statusCode}");
+Log.Error("数据验证失败，字段 '{field}' 格式错误");
 ```
 
 **输出示例**
@@ -748,6 +722,39 @@ namespace WpfApp
 }
 ```
 
+## 缓存机制
+
+### 软件信息缓存
+
+- 缓存时间: 5分钟
+- 相关方法:
+  - `GetCachedSoftwareInfo()`: 获取缓存
+  - `SetCachedSoftwareInfo()`: 设置缓存
+  - `IsCacheValid()`: 检查缓存有效性
+  - `ClearStaticCache()`: 清除缓存
+
+### 用户信息缓存
+
+- 缓存时间: 5分钟
+- 相关方法:
+  - `GetCachedUserInfo()`: 获取缓存
+  - `SetCachedUserInfo()`: 设置缓存
+  - `IsUserCacheValid()`: 检查缓存有效性
+  - `ClearUserCache()`: 清除缓存
+
+## 故障转移机制
+
+### 健康检测
+
+- 自动检测 API 地址健康状态
+- 5分钟缓存检测结果
+- 支持多个备用地址自动切换
+
+### 网络检查
+
+- 自动检测网络连接状态
+- 网络不可用时返回 NULL;
+
 ## 注意事项
 
 1. **初始化顺序**: 调用具体方法前需要先调用对应的初始化方法
@@ -762,7 +769,8 @@ namespace WpfApp
 ### 完整软件验证流程
 
 ```c#
-var update = new Update();
+using HaiTang.library;
+Update update = new();  // 实例化更新对象
 
 // 1. 初始化并检查软件状态
 var softwareInfo = await update.InitializationAsync("your_software_id", "your_developer_key");
@@ -785,7 +793,7 @@ if (await update.GetIsItEffective())
     if (await update.GetMandatoryUpdate())
     {
         string downloadLink = await update.GetDownloadLink();
-        Update.upgrade(downloadLink);
+        Tools.upgrade(downloadLink);
         // 退出当前应用程序
 		Application.Exit();
     }
