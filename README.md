@@ -46,25 +46,25 @@ Update update = new();  // 实例化更新对象
 var softwareInfo = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");
 
 string softwareId = softwareInfo.softwareId;        	// 实例ID
-string version = softwareInfo.versionNumber;       	// 版本号
+string version = softwareInfo.versionNumber;       		// 版本号
 string name = softwareInfo.softwareName;            	// 软件名称
 string updateInfo = softwareInfo.versionInformation; 	// 更新内容
 string notice = softwareInfo.notice;                	// 公告
 string downloadLink = softwareInfo.downloadLink;    	// 下载链接
-int visits = softwareInfo.numberOfVisits;        	// 访问量
+int visits = softwareInfo.numberOfVisits;        		// 访问量
 bool isItEffective = softwareInfo.isItEffective ;       // 是否激活
-long expirationDate = softwareInfo.expirationDate;	// 过期时间戳(毫秒)
+long expirationDate = softwareInfo.expirationDate;		// 过期时间戳(毫秒)
 ```
 
 #### 方法获取特定信息
 
 ```c#
-string allInfo = await update.GetSoftAll();			// 返回格式化的JSON字符串
+string allInfo = await update.GetSoftAll();					// 返回格式化的JSON字符串
 string softwareId = await update.GetSoftwareID();        	// 实例ID
 string version = await update.GetVersionNumber();       	// 版本号
 string name = await update.GetSoftwareName();            	// 软件名称
-string updateInfo = await update.GetVersionInformation();       // 更新内容
-string notice = await update.GetNotice();                       // 公告
+string updateInfo = await update.GetVersionInformation();	// 更新内容
+string notice = await update.GetNotice();					// 公告
 string downloadLink = await update.GetDownloadLink();    	// 下载链接
 string visits = await update.GetNumberOfVisits();        	// 访问量
 string minVersion = await update.GetMiniVersion();       	// 最低版本
@@ -223,13 +223,12 @@ string result = await update.Recharge("卡密ID");
 ### 1.常用方法
 
 ```c#
-Tools.GetMachineCodeEx();  				// 获取机器码
-Update.upgrade(string downloadUrl);  			// 启动更新程序
+Tools.GetMachineCodeEx();  							// 获取机器码
 Tools.GenerateRandomString(int length,int type);	// 生成随机字符
-Tools.GenerateSalt(int length = 64);  			// 生成随机盐值，默认为64字节
-Tools.Sha256(string input);				// 生成SHA256哈希值
-Tools.Sha512(string input);				// 生成SHA512哈希值
-Tools.upgrade(string downloadLink);		        // 启动更新程序
+Tools.GenerateSalt(int length = 64);  				// 生成随机盐值，默认为64字节
+Tools.Sha256(string input);							// 生成SHA256哈希值
+Tools.Sha512(string input);							// 生成SHA512哈希值
+Tools.upgrade(string downloadLink);		        	// 启动更新程序
 ```
 
 ### 2.程序更新
@@ -241,7 +240,7 @@ Tools.upgrade(string downloadLink);	// 启动更新程序
 ### 3.AES加密 自动IV
 
 ```c#
-Tools.Encrypt(string plainText,string key);	// AES加密
+Tools.Encrypt(string plainText,string key);		// AES加密
 Tools.Decrypt(string cipherText, string key);	// AES解密
 ```
 

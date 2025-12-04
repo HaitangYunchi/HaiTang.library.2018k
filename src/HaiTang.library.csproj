@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <PackageId>$(AssemblyName).2018k</PackageId>
     <Title>$(AssemblyName).2018k</Title>
-    <Version>1.4.6</Version>
+    <Version>1.4.7-alpha.2</Version>
     <Authors>HaiTangYunchi</Authors>
     <Product>$(AssemblyName).2018k</Product>
     <Description>提供与软件更新、用户管理、卡密验证、云变量操作等相关的 API 封装方法。
@@ -17,7 +17,7 @@
     <IncludeSymbols>False</IncludeSymbols>
     <SymbolPackageFormat>symbols.nupkg</SymbolPackageFormat>
     <RepositoryUrl>https://github.com/HaitangYunchi/HaiTang.library.2018k.git</RepositoryUrl>
-    <PackageTags>HaiTangYunchi;HaiTang.library;HaiTang.library.2018k;Update;haitang;yunchi;haitangyunchi;upddate;upgrade</PackageTags>
+    <PackageTags>HaiTangYunchi;HaiTang.library;HaiTang.library.2018k;Update;haitang;yunchi;haitangyunchi;update;upgrade</PackageTags>
     <Copyright>Copyright © 2025 HaiTangYunchi. All rights reserved.</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
@@ -61,6 +61,7 @@
 	<ItemGroup>
 		<None Include="$(OutputPath)*.exe" Pack="true" PackagePath="content\" />
 		<None Include="$(OutputPath)*.json" Pack="true" PackagePath="content\" />
+		<None Include="$(OutputPath)*.dll" Pack="true" PackagePath="content\" />
 		<None Include="$(OutputPath)*.xml" Pack="true" PackagePath="content\" />
 		<None Include="$(OutputPath)*.targets" Pack="true" PackagePath="build/$(PackageId).targets" />
 

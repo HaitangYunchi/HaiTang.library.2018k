@@ -224,7 +224,6 @@ string result = await update.Recharge("卡密ID");
 
 ```c#
 Tools.GetMachineCodeEx();  				// 获取机器码
-Update.upgrade(string downloadUrl);  			// 启动更新程序
 Tools.GenerateRandomString(int length,int type);	// 生成随机字符
 Tools.GenerateSalt(int length = 64);  			// 生成随机盐值，默认为64字节
 Tools.Sha256(string input);				// 生成SHA256哈希值

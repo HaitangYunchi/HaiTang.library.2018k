@@ -70,7 +70,12 @@ namespace HaiTang.library
             {
                 Name = "file",
                 FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", "${shortdate}.log"),
-                Layout = "${longdate} [${level:uppercase=true}] ${callsite:className=true:fileName=false:includeSourcePath=false:methodName=true} - ${message} ${exception:format=tostring}"
+                
+                // 显示调用方法的完整信息（包括类名和方法名 本类）
+                // Layout = "${longdate} [${level:uppercase=true}] ${callsite:className=true:fileName=false:includeSourcePath=false:methodName=true} - ${message} ${exception:format=tostring}"
+                
+                // 显示调用方法的上一层调用信息 (调用方的类名和方法名)
+                Layout = "${longdate} [${level:uppercase=true}] ${callsite:className=true:fileName=false:includeSourcePath=false:methodName=true:skipFrames=1} - ${message} ${exception:format=tostring}"
             };
 
             config.AddTarget(fileTarget);
