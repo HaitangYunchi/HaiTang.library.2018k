@@ -101,13 +101,14 @@ var (success, message) = await update.ActivationKey("卡密ID");
 #### 创建卡密
 
 ```c#
-string result = await update.CreateNetworkAuthentication(30, "测试卡密");
+string result = await update.CreateNetworkAuthentication(30, "测试卡密"."程序实例ID");
 // 返回JSON格式的卡密信息
 ```
 
 - **参数**:
   - `day`: 有效期天数
   - `remark`: 卡密备注
+  - `ID`: 程序实例ID
 
 #### 解绑/换绑
 

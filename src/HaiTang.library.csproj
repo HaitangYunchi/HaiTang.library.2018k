@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <PackageId>$(AssemblyName).2018k</PackageId>
     <Title>$(AssemblyName).2018k</Title>
-    <Version>1.4.7-alpha.2</Version>
+    <Version>1.4.8</Version>
     <Authors>HaiTangYunchi</Authors>
     <Product>$(AssemblyName).2018k</Product>
     <Description>提供与软件更新、用户管理、卡密验证、云变量操作等相关的 API 封装方法。

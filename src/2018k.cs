@@ -43,13 +43,13 @@ namespace HaiTang.library
         #region 常量定义
 
         /// <summary>
-        /// 通用错误信息字符串，表示空或无效结果。
+        /// 通用错误信息字符串,表示空或无效结果。
         /// </summary>
         public static readonly string _error = "<空>";
         /// <summary>
-        /// 通用错误信息字符串，表示空或无效结果。
+        /// 通用错误信息字符串,表示空或无效结果。
         /// </summary>
-        public static readonly string _worring = "错误：无法获取用户相关信息，请检查登录信息和系统时间是否正确";
+        public static readonly string _worring = "错误：无法获取用户相关信息,请检查登录信息和系统时间是否正确";
         private readonly HttpClient _httpClient = new();
         private const string DefaultApiUrl = "http://api.2018k.cn";
         private static string OpenApiUrl = DefaultApiUrl;
@@ -63,7 +63,7 @@ namespace HaiTang.library
         private static readonly TimeSpan healthCacheDuration = TimeSpan.FromMinutes(5);
         // 健康检测超时时间（5秒）
         private static readonly TimeSpan healthCheckTimeout = TimeSpan.FromSeconds(5);
-        // 锁对象，确保线程安全
+        // 锁对象,确保线程安全
         private static readonly object lockObject = new object();
         // 用于健康检测的HttpClient
         private static readonly HttpClient healthCheckClient = new HttpClient() { Timeout = healthCheckTimeout };
@@ -184,12 +184,12 @@ namespace HaiTang.library
         
 
         /// <summary>
-        /// 检测实例是否正常 （ 程序实例ID，机器码 [null] ）
+        /// 检测实例是否正常 （ 程序实例ID,机器码 [null] ）
         /// </summary>
         /// <param name="ID">程序实例ID</param>
         /// <param name="key">OpenID</param>
-        /// <param name="Code">机器码，可以省略</param>
-        /// <returns>返回布尔值 如果 Code 为空，机器码为空时，使用自带的机器码</returns>
+        /// <param name="Code">机器码,可以省略</param>
+        /// <returns>返回布尔值 如果 Code 为空,机器码为空时,使用自带的机器码</returns>
         public async Task<bool> GetSoftCheck(string ID, string key, string Code = null)
         {
             string _result;
@@ -220,7 +220,7 @@ namespace HaiTang.library
 
                         try
                         {
-                            // 尝试解密数据，失败则直接返回 false
+                            // 尝试解密数据,失败则直接返回 false
                             string JsonData = _JsonData?.data != null ? AesDecrypt(_JsonData.data, key) : string.Empty;
                             Json2018K? _Data = JsonConvert.DeserializeObject<Json2018K>(JsonData);
                             Mysoft config = ConvertToMysoftConfig(_Data);
@@ -242,8 +242,8 @@ namespace HaiTang.library
         /// </summary>
         /// <param name="ID">程序实例ID</param>
         /// <param name="key">OpenID</param>
-        /// <param name="Code">机器码，可以省略</param>
-        /// <returns>返回 Mysoft类 机器码为空时，使用自带的机器码</returns>
+        /// <param name="Code">机器码,可以省略</param>
+        /// <returns>返回 Mysoft类 机器码为空时,使用自带的机器码</returns>
         public async Task<Mysoft> InitializationAsync(string ID, string key, string Code = null)
         {
             if (string.IsNullOrEmpty(Code))
@@ -362,7 +362,7 @@ namespace HaiTang.library
         /// <summary>
         /// 获取软件最低版本号
         /// </summary>
-        /// <returns>string 返回软件最低版本号，机器码可空</returns>
+        /// <returns>string 返回软件最低版本号,机器码可空</returns>
         public async Task<string> GetMiniVersion()
         {
             var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
@@ -450,7 +450,7 @@ namespace HaiTang.library
         }
 
         /// <summary>
-        /// 获取云变量 （ 程序实例ID，OpenID，云端变量名称 ）
+        /// 获取云变量 （ 程序实例ID,OpenID,云端变量名称 ）
         /// </summary>
         /// <param name="VarName">云端变量名称</param>
         /// <returns>string 返回云变量的值</returns>
@@ -500,7 +500,7 @@ namespace HaiTang.library
         }
 
         /// <summary>
-        /// 修改云变量，如果变量不存在则新增
+        /// 修改云变量,如果变量不存在则新增
         /// </summary>
         /// <param name="VarKey">云端变量名称</param>
         /// <param name="Value">要设置的变量值</param>
@@ -534,7 +534,7 @@ namespace HaiTang.library
             catch
             {
                 Log.Error("修改云变量失败,网络异常或程序错误");
-                return (false, "失败，网络异常或程序错误");
+                return (false, "失败,网络异常或程序错误");
             }
         }
 
@@ -557,12 +557,12 @@ namespace HaiTang.library
                     var _JsonData = JsonConvert.DeserializeObject<Json2018K>(responseContent);
                     return (_JsonData?.success ?? false) ? "true" : "false";
                 }) == "true";
-                return (_response, _response ? "激活成功" : "激活失败，请检查卡密是否正确或已被使用");
+                return (_response, _response ? "激活成功" : "激活失败,请检查卡密是否正确或已被使用");
             }
             catch
             {
                 Log.Error("激活失败,网络异常或程序错误");
-                return (false, "激活失败，网络异常或程序错误");
+                return (false, "激活失败,网络异常或程序错误");
             }
         }
 
@@ -591,19 +591,20 @@ namespace HaiTang.library
                 }
                 catch
                 {
-                    // 如果解析失败，返回原始内容
+                    // 如果解析失败,返回原始内容
                     return responseContent;
                 }
             });
         }
 
         /// <summary>
-        /// 创建卡密  （ 卡密天数，卡密备注）
+        /// 创建卡密  （ 卡密天数,卡密备注,程序实例ID）
         /// </summary>
         /// <param name="day">卡密天数</param>
         /// <param name="remark">卡密备注</param>
+        /// <param name="ID">程序实例ID</param>
         /// <returns>返回JSON</returns>
-        public async Task<string> CreateNetworkAuthentication(int day, string remark)
+        public async Task<string> CreateNetworkAuthentication(int day, string remark,string ID)
         {
             return await ExecuteApiRequest(async (apiUrl) =>
             {
@@ -619,7 +620,7 @@ namespace HaiTang.library
                 string encodedCiphertext = AesEncrypt(data, Constants.DEVELOPER_KEY);
 
                 // 发送请求
-                string url = $"{apiUrl}/v3/createNetworkAuthentication?info={Uri.EscapeDataString(encodedCiphertext)}&softwareId={Constants.SOFTWARE_ID}&isAPI=y";
+                string url = $"{apiUrl}/v3/createNetworkAuthentication?info={Uri.EscapeDataString(encodedCiphertext)}&softwareId={ID}&isAPI=y";
 
                 HttpResponseMessage response = await _httpClient.GetAsync(url);
                 response.EnsureSuccessStatusCode();
@@ -635,14 +636,14 @@ namespace HaiTang.library
                 }
                 catch
                 {
-                    // 如果解析失败，返回原始内容
+                    // 如果解析失败,返回原始内容
                     return responseContent;
                 }
             });
         }
 
         /// <summary>
-        /// 解绑、换绑 机器码为空则解绑 (卡密ID，机器码)
+        /// 解绑、换绑 机器码为空则解绑 (卡密ID,机器码)
         /// </summary>
         /// <param name="AuthId">卡密ID</param>
         /// <param name="Code">机器码</param>
@@ -671,19 +672,19 @@ namespace HaiTang.library
                     var _JsonData = JsonConvert.DeserializeObject<Json2018K>(responseContent);
                     return (_JsonData?.success ?? false) ? "true" : "false";
                 }) == "true";
-                return (_response, _response ? "解|换绑成功" : "解|换绑失败，请检查卡密ID是否正确");
+                return (_response, _response ? "解|换绑成功" : "解|换绑失败,请检查卡密ID是否正确");
             }
             catch
             {
                 Log.Error("解绑|换绑失败,网络异常或程序错误");
-                return (false, "解绑|换绑失败，网络异常或程序错误");
+                return (false, "解绑|换绑失败,网络异常或程序错误");
             }
         }
 
         /// <summary>
         /// 获取剩余使用时间
         /// </summary>
-        /// <returns>长整数类型long 永久返回-1，过期返回0，未注册返回1，其余返回时间戳，</returns>
+        /// <returns>长整数类型long 永久返回-1,过期返回0,未注册返回1,其余返回时间戳,</returns>
         public async Task<long> GetRemainingUsageTime()
         {
             var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
@@ -980,8 +981,8 @@ namespace HaiTang.library
         /// <summary>
         /// 使用AES算法加密指定的数据对象。
         /// </summary>
-        /// <param name="data">要加密的数据对象，将被序列化为JSON字符串。</param>
-        /// <param name="key">加密密钥，十六进制字符串。</param>
+        /// <param name="data">要加密的数据对象,将被序列化为JSON字符串。</param>
+        /// <param name="key">加密密钥,十六进制字符串。</param>
         /// <returns>加密后的Base64字符串。</returns>
         public string AesEncrypt(object data, string key)
         {
@@ -1021,8 +1022,8 @@ namespace HaiTang.library
         /// 使用AES算法解密指定的Base64加密字符串。
         /// </summary>
         /// <param name="encryptedData">加密后的Base64字符串。</param>
-        /// <param name="key">解密密钥，十六进制字符串。</param>
-        /// <returns>解密后的字符串，如果解密失败则返回异常信息。</returns>
+        /// <param name="key">解密密钥,十六进制字符串。</param>
+        /// <returns>解密后的字符串,如果解密失败则返回异常信息。</returns>
         public string AesDecrypt(string encryptedData, string key)
         {
 
@@ -1070,7 +1071,7 @@ namespace HaiTang.library
         /// <summary>
         /// 获取软件所有信息并转换为Mysoft对象
         /// </summary>
-        /// <returns>返回Mysoft对象，如果获取失败返回null</returns>
+        /// <returns>返回Mysoft对象,如果获取失败返回null</returns>
         private async Task<Mysoft> GetSoftwareInfoAsync()
         {
             try
@@ -1185,7 +1186,7 @@ namespace HaiTang.library
         // <summary>
         /// 获取用户所有信息并转换为USER对象
         /// </summary>
-        /// <returns>返回Mysoft对象，如果获取失败返回null</returns>
+        /// <returns>返回Mysoft对象,如果获取失败返回null</returns>
         private async Task<UserInfo> GetUserInfoAsync()
         {
             long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -1255,7 +1256,7 @@ namespace HaiTang.library
         /// <summary>
         /// 检查网络连接是否可用
         /// </summary>
-        /// <returns>如果网络可用返回true，否则返回false</returns>
+        /// <returns>如果网络可用返回true,否则返回false</returns>
         private static bool IsNetworkAvailable()
         {
             try
@@ -1265,7 +1266,7 @@ namespace HaiTang.library
             }
             catch
             {
-                // 如果检查过程中出现异常，保守返回false
+                // 如果检查过程中出现异常,保守返回false
                 Log.Error("检查网络连接状态时出现异常");
                 return false;
             }
@@ -1340,7 +1341,7 @@ namespace HaiTang.library
         {
             var status = apiHealthStatus[apiUrl];
 
-            // 如果正在检测中，跳过
+            // 如果正在检测中,跳过
             if (status.IsChecking)
                 return;
 
@@ -1397,7 +1398,7 @@ namespace HaiTang.library
                         using var cts = new CancellationTokenSource(healthCheckTimeout);
                         var response = await healthCheckClient.GetAsync(checkUrl, cts.Token);
 
-                        // 如果返回2xx状态码，认为API健康
+                        // 如果返回2xx状态码,认为API健康
                         if (response.IsSuccessStatusCode)
                         {
                             return true;
@@ -1451,7 +1452,7 @@ namespace HaiTang.library
                     return OpenApiUrl;
                 }
 
-                // 当前地址不健康，寻找下一个健康地址
+                // 当前地址不健康,寻找下一个健康地址
                 for (int i = 0; i < Constants.ApiAddressList.Length; i++)
                 {
                     var index = (currentApiIndex + i + 1) % Constants.ApiAddressList.Length;
@@ -1465,7 +1466,7 @@ namespace HaiTang.library
                     }
                 }
 
-                // 所有备用地址都不健康，回退到默认地址
+                // 所有备用地址都不健康,回退到默认地址
                 OpenApiUrl = LocalApiUrl;
                 return OpenApiUrl;
             }
@@ -1484,17 +1485,17 @@ namespace HaiTang.library
 
             var status = apiHealthStatus[apiUrl];
 
-            // 如果缓存未过期，直接返回缓存状态
+            // 如果缓存未过期,直接返回缓存状态
             if (DateTime.Now - status.LastChecked < healthCacheDuration)
             {
                 return status.IsHealthy;
             }
 
-            // 缓存过期，触发异步重新检测（不等待结果，使用上次的状态）
-            // 检测会在后台进行，下次调用时会使用新的检测结果
+            // 缓存过期,触发异步重新检测（不等待结果,使用上次的状态）
+            // 检测会在后台进行,下次调用时会使用新的检测结果
             _ = Task.Run(() => CheckApiHealthAsync(apiUrl));
 
-            return status.IsHealthy; // 返回当前状态，可能不是最新的
+            return status.IsHealthy; // 返回当前状态,可能不是最新的
         }
 
         /// <summary>
@@ -1517,16 +1518,16 @@ namespace HaiTang.library
         }
 
         /// <summary>
-        /// 执行API请求，使用最佳可用地址
+        /// 执行API请求,使用最佳可用地址
         /// </summary>
         private static async Task<string> ExecuteApiRequest(Func<string, Task<string>> requestFunc)
         {
             Exception lastException = null;
             string bestApiUrl = GetBestAvailableApiUrl();
-            // 如果检测到使用本地地址，直接返回空字符串，避免返回 null
+            // 如果检测到使用本地地址,直接返回空字符串,避免返回 null
             if (bestApiUrl == LocalApiUrl)
             {
-                // 直接返回，不执行请求
+                // 直接返回,不执行请求
                 return string.Empty;
             }
 
@@ -1534,7 +1535,7 @@ namespace HaiTang.library
             {
                 // 使用最佳可用地址执行请求
                 var result = await requestFunc(bestApiUrl);
-                // 如果 result 可能为 null，则返回空字符串
+                // 如果 result 可能为 null,则返回空字符串
                 return result ?? string.Empty;
             }
             catch (HttpRequestException ex)
@@ -1561,7 +1562,7 @@ namespace HaiTang.library
                         }
                     }
                 }
-                // 所有远程地址都失败，返回空字符串
+                // 所有远程地址都失败,返回空字符串
                 return string.Empty;
             }
             catch (Exception ex)
@@ -1583,7 +1584,7 @@ namespace HaiTang.library
                 throw new ArgumentException("Invalid encrypted text");
             }             
 
-            // 提取salt（8字节，从索引8开始）
+            // 提取salt（8字节,从索引8开始）
             byte[] saltData = new byte[8];
             Array.Copy(cipherData, 8, saltData, 0, 8);
 
