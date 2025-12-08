@@ -1,0 +1,14 @@
+﻿<?xml version='1.0'?>
+<Obfuscator>
+	<Var name="InPath" value=".\bin\Release\net8.0" />
+	<Var name="OutPath" value=".\bin\Release\net8.0\Obfuscated" />
+	<!-- 关键：保持公共API名称不变 -->
+	<Var name="KeepPublicApi" value="true" />
+	<!-- 保护内部实现：混淆私有成员 -->
+	<Var name="HidePrivateApi" value="false" />
+	<!-- 其他保护增强选项 -->
+	<Var name="UseUnicodeNames" value="true" />
+	<Var name="HideStrings" value="true" />
+	<Var name="ReuseNames" value="true" />
+	<Module file="$(InPath)\HaiTang.library.dll" />
+</Obfuscator>

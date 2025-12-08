@@ -33,6 +33,8 @@ namespace HaiTang.library
     public class Tools
     {
         private static readonly Random _random = new();
+        // 应用程序相关常量
+        private static readonly string MACHINE_CODE_SALT = "k3apRuJR2j388Yy5CWxfnXrHkwg3AvUntgVhuUMWBDXDEsyaeX7Ze3QbvmejbqSz";
         #region 公有方法
 
         /// <summary>
@@ -103,7 +105,7 @@ namespace HaiTang.library
                 string cpuId = GetCpuId();
                 string motherboardId = GetMotherboardId();
                 // 生成机器码
-                string composite = $"{cpuId}-{motherboardId}-{Constants.MACHINE_CODE_SALT}";
+                string composite = $"{cpuId}-{motherboardId}-{MACHINE_CODE_SALT}";
 
                 return Tools.Sha512(composite);
             }
@@ -179,25 +181,7 @@ namespace HaiTang.library
                 return Convert.ToBase64String(randomBytes);
             }
         }
-        // 获取CPU信息
-        private static string GetCpuId()
-        {
-            try
-            {
-                using var searcher = new ManagementObjectSearcher("SELECT ProcessorId FROM Win32_Processor");
-                using var collection = searcher.Get();
-
-                var cpuId = collection.Cast<ManagementObject>()
-                    .Select(mo => mo["ProcessorId"]?.ToString())
-                    .FirstOrDefault(id => !string.IsNullOrEmpty(id));
-
-                return cpuId ?? "UnknownCPU";
-            }
-            catch
-            {
-                return "UnknownCPU";
-            }
-        }
+        
         /// <summary>
         /// 计算输入字符串的SHA-256哈希值
         /// </summary>
@@ -498,11 +482,30 @@ namespace HaiTang.library
             }
         }
 
+        // 获取CPU信息
+        private static string GetCpuId()
+        {
+            try
+            {
+                using var searcher = new ManagementObjectSearcher("SELECT ProcessorId FROM Win32_Processor");
+                using var collection = searcher.Get();
+
+                var cpuId = collection.Cast<ManagementObject>()
+                    .Select(mo => mo["ProcessorId"]?.ToString())
+                    .FirstOrDefault(id => !string.IsNullOrEmpty(id));
+
+                return cpuId ?? "UnknownCPU";
+            }
+            catch
+            {
+                return "UnknownCPU";
+            }
+        }
         // 生成序列号
         private static string GenerateFormattedCode(string cpuId, string motherboardId)
         {
             // 组合硬件信息
-            string composite = $"{cpuId}_{motherboardId}_{Constants.MACHINE_CODE_SALT}";
+            string composite = $"{cpuId}_{motherboardId}_{MACHINE_CODE_SALT}";
             // 格式化输出
             return FormatMachineCode(Tools.Sha256(composite));
 

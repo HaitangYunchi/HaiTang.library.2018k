@@ -1,74 +1,110 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <PackageId>$(AssemblyName).2018k</PackageId>
-    <Title>$(AssemblyName).2018k</Title>
-    <Version>1.4.8</Version>
-    <Authors>HaiTangYunchi</Authors>
-    <Product>$(AssemblyName).2018k</Product>
-    <Description>提供与软件更新、用户管理、卡密验证、云变量操作等相关的 API 封装方法。
-支持多 API 地址故障转移、健康检测、加密解密等功能。</Description>
-    <PackageIcon>update.png</PackageIcon>
-    <PackageLicenseFile>License.txt</PackageLicenseFile>
-    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <IncludeSymbols>False</IncludeSymbols>
-    <SymbolPackageFormat>symbols.nupkg</SymbolPackageFormat>
-    <RepositoryUrl>https://github.com/HaitangYunchi/HaiTang.library.2018k.git</RepositoryUrl>
-    <PackageTags>HaiTangYunchi;HaiTang.library;HaiTang.library.2018k;Update;haitang;yunchi;haitangyunchi;update;upgrade</PackageTags>
-    <Copyright>Copyright © 2025 HaiTangYunchi. All rights reserved.</Copyright>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <PackageProjectUrl>https://www.nuget.org/packages/HaiTang.library.2018k</PackageProjectUrl>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<PackageId>$(AssemblyName).2018k</PackageId>
+		<Title>$(AssemblyName).2018k</Title>
+		<Version>1.4.8-alpha.13</Version>
+		<Authors>HaiTangYunchi</Authors>
+		<Product>$(AssemblyName).2018k</Product>
+		<Description>
+			提供与软件更新、用户管理、卡密验证、云变量操作等相关的 API 封装方法。
+			支持多 API 地址故障转移、健康检测、加密解密等功能。
+		</Description>
+		<PackageIcon>update.png</PackageIcon>
+		<PackageLicenseFile>License.txt</PackageLicenseFile>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<IncludeSymbols>False</IncludeSymbols>
+		<SymbolPackageFormat>symbols.nupkg</SymbolPackageFormat>
+		<RepositoryUrl>https://github.com/HaitangYunchi/HaiTang.library.2018k.git</RepositoryUrl>
+		<PackageTags>HaiTangYunchi;HaiTang.library;HaiTang.library.2018k;Update;haitang;yunchi;haitangyunchi;update;upgrade</PackageTags>
+		<Copyright>Copyright © 2025 HaiTangYunchi. All rights reserved.</Copyright>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<PackageProjectUrl>https://www.nuget.org/packages/HaiTang.library.2018k</PackageProjectUrl>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="files\License.txt" />
-    <None Remove="files\update.png" />
-	<None Remove="files\README.md" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="files\License.txt" />
+		<None Remove="files\update.png" />
+		<None Remove="files\README.md" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="NLog" Version="6.0.6" />
-    <PackageReference Include="System.Management" Version="10.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+		<PackageReference Include="NLog" Version="6.0.6" />
+		<PackageReference Include="Obfuscar" Version="2.2.49">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="System.Management" Version="10.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="files\License.txt">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </Resource>
-    <Resource Include="files\README.md">
-	  <Pack>True</Pack>
-	  <PackagePath>\</PackagePath>
-	</Resource>
-    <Resource Include="files\update.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </Resource>
-  </ItemGroup>
+	<ItemGroup>
+		<Resource Include="files\License.txt">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</Resource>
+		<Resource Include="files\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</Resource>
+		<Resource Include="files\update.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</Resource>
+	</ItemGroup>
+
+	<!-- 打包规则：将输出目录的所有相关文件打入NuGet包 -->
 	<ItemGroup>
 		<None Include="$(OutputPath)*.exe" Pack="true" PackagePath="content\" />
 		<None Include="$(OutputPath)*.json" Pack="true" PackagePath="content\" />
 		<None Include="$(OutputPath)*.dll" Pack="true" PackagePath="content\" />
 		<None Include="$(OutputPath)*.xml" Pack="true" PackagePath="content\" />
 		<None Include="$(OutputPath)*.targets" Pack="true" PackagePath="build/$(PackageId).targets" />
+	</ItemGroup>
 
-	</ItemGroup>
+	<!-- 配置文件和目标文件的复制规则 -->
 	<ItemGroup>
-	  <None Update="upgrade.targets">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
+		<!-- 只在Release模式下将混淆配置文件复制到输出目录 -->
+		<None Update="obfuscar.xml" Condition="'$(Configuration)' == 'Release'">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="upgrade.targets">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
+
+	<!-- 核心：在Release构建后自动执行混淆并覆盖主输出文件的Target -->
+	<Target Name="ObfuscarTask" AfterTargets="AfterBuild" Condition="'$(Configuration)' == 'Release'">
+		<PropertyGroup>
+			<!-- 定义混淆命令 -->
+			<ObfuscateCommand>"$(Obfuscar)" obfuscar.xml</ObfuscateCommand>
+			<!-- 正确定义混淆后的文件路径（与obfuscar.xml中的OutPath对应） -->
+			<ObfuscatedOutputDir>$(OutDir)Obfuscated</ObfuscatedOutputDir>
+			<ObfuscatedDllPath>$(ObfuscatedOutputDir)\$(TargetFileName)</ObfuscatedDllPath>
+		</PropertyGroup>
+
+		<!-- 步骤1: 执行混淆 -->
+		<Message Text="[Obfuscar] 开始执行代码混淆..." Importance="high" />
+		<Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="$(ObfuscateCommand)" />
+
+		<!-- 步骤2: 将混淆后的DLL复制回主输出目录，覆盖原始文件 -->
+		<Copy SourceFiles="$(ObfuscatedDllPath)" DestinationFiles="$(TargetPath)" OverwriteReadOnlyFiles="true" Condition="Exists('$(ObfuscatedDllPath)')" />
+
+		<!-- 步骤3: 输出最终结果信息 -->
+		<Message Text="[Obfuscar] 混淆成功！文件已复制至: $(TargetPath)" Importance="high" Condition="Exists('$(ObfuscatedDllPath)')" />
+		<Warning Text="[Obfuscar] 警告：未找到混淆输出文件 '$(ObfuscatedDllPath)'，打包的可能是未混淆版本。" Condition="!Exists('$(ObfuscatedDllPath)')" />
+	</Target>
+
 </Project>
