@@ -179,25 +179,7 @@ namespace HaiTang.library
                 return Convert.ToBase64String(randomBytes);
             }
         }
-        // 获取CPU信息
-        private static string GetCpuId()
-        {
-            try
-            {
-                using var searcher = new ManagementObjectSearcher("SELECT ProcessorId FROM Win32_Processor");
-                using var collection = searcher.Get();
-
-                var cpuId = collection.Cast<ManagementObject>()
-                    .Select(mo => mo["ProcessorId"]?.ToString())
-                    .FirstOrDefault(id => !string.IsNullOrEmpty(id));
-
-                return cpuId ?? "UnknownCPU";
-            }
-            catch
-            {
-                return "UnknownCPU";
-            }
-        }
+        
         /// <summary>
         /// 计算输入字符串的SHA-256哈希值
         /// </summary>
@@ -498,6 +480,25 @@ namespace HaiTang.library
             }
         }
 
+        // 获取CPU信息
+        private static string GetCpuId()
+        {
+            try
+            {
+                using var searcher = new ManagementObjectSearcher("SELECT ProcessorId FROM Win32_Processor");
+                using var collection = searcher.Get();
+
+                var cpuId = collection.Cast<ManagementObject>()
+                    .Select(mo => mo["ProcessorId"]?.ToString())
+                    .FirstOrDefault(id => !string.IsNullOrEmpty(id));
+
+                return cpuId ?? "UnknownCPU";
+            }
+            catch
+            {
+                return "UnknownCPU";
+            }
+        }
         // 生成序列号
         private static string GenerateFormattedCode(string cpuId, string motherboardId)
         {
