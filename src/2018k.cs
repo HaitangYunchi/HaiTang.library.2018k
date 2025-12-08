@@ -1224,12 +1224,18 @@ namespace HaiTang.library
                     }
                     else
                     {
-                        return null;
+                        // 返回空对象的 JSON 字符串，避免返回 null
+                        return JsonConvert.SerializeObject(new UserInfo(), Formatting.Indented);
                     }
 
                 }
             });
             var UserJsonData = JsonConvert.DeserializeObject<UserInfo>(userinfo);
+            // 保证返回非 null
+            if(UserJsonData == null)
+            {
+                return null;
+            }
             return ConvertToUserConfig(UserJsonData);
         }
         /// <summary>

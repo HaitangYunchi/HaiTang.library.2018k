@@ -30,9 +30,7 @@ namespace HaiTang.library.Utils
 {
     public static class Constants
     {
-        // 应用程序相关常量
-        public const string MACHINE_CODE_SALT = "k3apRuJR2j388Yy5CWxfnXrHkwg3AvUntgVhuUMWBDXDEsyaeX7Ze3QbvmejbqSz";
-
+  
         // 软件验证相关变量
         public static string SOFTWARE_ID =string.Empty;
         public static string DEVELOPER_KEY = string.Empty;
