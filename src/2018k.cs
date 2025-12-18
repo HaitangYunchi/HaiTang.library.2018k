@@ -22,10 +22,8 @@
 
 
 using HaiTang.library.Models;
-using HaiTang.library.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Text;
@@ -45,11 +43,11 @@ namespace HaiTang.library
         /// <summary>
         /// 通用错误信息字符串,表示空或无效结果。
         /// </summary>
-        public static readonly string _error = "<空>";
+        private static readonly string _error = "<空>";
         /// <summary>
         /// 通用错误信息字符串,表示空或无效结果。
         /// </summary>
-        public static readonly string _worring = "错误：无法获取用户相关信息,请检查登录信息和系统时间是否正确";
+        private static readonly string _worring = "错误：无法获取用户相关信息,请检查登录信息和系统时间是否正确";
         private readonly HttpClient _httpClient = new();
         private const string DefaultApiUrl = "http://api.2018k.cn";
         private static string OpenApiUrl = DefaultApiUrl;
@@ -71,12 +69,12 @@ namespace HaiTang.library
 
         #region 静态缓存字段和方法
         // 静态缓存字段
-        private static Mysoft _cachedSoftwareInfo = null;
+        private static Mysoft? _cachedSoftwareInfo = null;
         private static DateTime _lastCacheTime = DateTime.MinValue;
-        private static readonly object _cacheLock = new object();
+        private static readonly object _cacheLock = new();
         private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
 
-        private static UserInfo _cachedUserInfo = null;
+        private static UserInfo? _cachedUserInfo = null;
         private static DateTime _userLastCacheTime = DateTime.MinValue;
         private static readonly object _UserCacheLock = new object();
         private static readonly TimeSpan UserCacheDuration = TimeSpan.FromMinutes(5);
@@ -88,7 +86,8 @@ namespace HaiTang.library
         {
             lock (_cacheLock)
             {
-                return _cachedSoftwareInfo;
+                // 保证不返回 null，若为 null 则返回一个空对象
+                return _cachedSoftwareInfo ?? new Mysoft();
             }
         }
 
@@ -139,7 +138,7 @@ namespace HaiTang.library
         {
             lock (_UserCacheLock)
             {
-                return _cachedUserInfo;
+                return _cachedUserInfo ?? new UserInfo(); ;
             }
         }
 
@@ -190,7 +189,7 @@ namespace HaiTang.library
         /// <param name="key">OpenID</param>
         /// <param name="Code">机器码,可以省略</param>
         /// <returns>返回布尔值 如果 Code 为空,机器码为空时,使用自带的机器码</returns>
-        public async Task<bool> GetSoftCheck(string ID, string key, string Code = null)
+        public async Task<bool> GetSoftCheck(string ID, string key, string? Code = null)
         {
             string _result;
             if (string.IsNullOrEmpty(Code))
@@ -223,8 +222,15 @@ namespace HaiTang.library
                             // 尝试解密数据,失败则直接返回 false
                             string JsonData = _JsonData?.data != null ? AesDecrypt(_JsonData.data, key) : string.Empty;
                             Json2018K? _Data = JsonConvert.DeserializeObject<Json2018K>(JsonData);
-                            Mysoft config = ConvertToMysoftConfig(_Data);
-                            return (_Data != null && _Data.user != null) ? "true" : "false";
+                            if (_Data != null)
+                            {
+                                Mysoft config = ConvertToMysoftConfig(_Data);
+                                return (_Data != null && _Data.user != null) ? "true" : "false";
+                            }
+                            else
+                            {
+                                return "false";
+                            }
                         }
                         catch
                         {
@@ -244,7 +250,7 @@ namespace HaiTang.library
         /// <param name="key">OpenID</param>
         /// <param name="Code">机器码,可以省略</param>
         /// <returns>返回 Mysoft类 机器码为空时,使用自带的机器码</returns>
-        public async Task<Mysoft> InitializationAsync(string ID, string key, string Code = null)
+        public async Task<Mysoft> InitializationAsync(string ID, string key, string? Code = null)
         {
             if (string.IsNullOrEmpty(Code))
             {
@@ -276,7 +282,7 @@ namespace HaiTang.library
         /// <returns>返回 Json 字符串</returns>
         public async Task<string> GetSoftAll()
         {
-            // 调用新方法获取Mysoft对象
+            // 获取Mysoft对象
             var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
 
             if (softwareInfo == null)
@@ -557,12 +563,12 @@ namespace HaiTang.library
                     var _JsonData = JsonConvert.DeserializeObject<Json2018K>(responseContent);
                     return (_JsonData?.success ?? false) ? "true" : "false";
                 }) == "true";
-                return (_response, _response ? "激活成功" : "激活失败,请检查卡密是否正确或已被使用");
+                return (_response, _response ? "授权成功" : "授权失败,请检查卡密是否正确或已被使用");
             }
             catch
             {
-                Log.Error("激活失败,网络异常或程序错误");
-                return (false, "激活失败,网络异常或程序错误");
+                Log.Error("授权失败,网络异常或程序错误");
+                return (false, "失败,网络异常或程序错误");
             }
         }
 
@@ -648,7 +654,7 @@ namespace HaiTang.library
         /// <param name="AuthId">卡密ID</param>
         /// <param name="Code">机器码</param>
         /// <returns>返回bool success 和 string message</returns>
-        public async Task<(bool success, string message)> ReplaceBind(string AuthId, string Code = null)
+        public async Task<(bool success, string message)> ReplaceBind(string AuthId, string? Code = null)
         {
             try
             {
@@ -774,7 +780,7 @@ namespace HaiTang.library
         /// <param name="nickName">昵称</param>
         /// <param name="captcha">验证码</param>
         /// <returns>返回 布尔类型 True 或 Fales [昵称,头像,验证码]可空</returns>
-        public async Task<bool> CustomerRegister(string email, string password, string nickName = null, string avatarUrl = null, string captcha = null)
+        public async Task<bool> CustomerRegister(string email, string password, string? nickName = null, string? avatarUrl = null, string? captcha = null)
         {
 
             string _data = await ExecuteApiRequest(async (apiUrl) =>
@@ -1075,60 +1081,58 @@ namespace HaiTang.library
         private async Task<Mysoft> GetSoftwareInfoAsync()
         {
             try
-
             {
                 // 先获取JSON字符串
                 string jsonResult = await ExecuteApiRequest(async (apiUrl) =>
                 {
-                    using (HttpClient httpClient = new())
-                    {
-                        // 构建请求URL
-                        string requestUrl = $"{apiUrl}/v3/obtainSoftware?softwareId={Constants.SOFTWARE_ID}&machineCode={Constants.LOCAL_MACHINE_CODE}&isAPI=y";
+                    using HttpClient httpClient = new();
+                    // 构建请求URL
+                    string requestUrl = $"{apiUrl}/v3/obtainSoftware?softwareId={Constants.SOFTWARE_ID}&machineCode={Constants.LOCAL_MACHINE_CODE}&isAPI=y";
 
-                        // 发送GET请求
-                        HttpResponseMessage response = await httpClient.GetAsync(requestUrl);
-                        response.EnsureSuccessStatusCode();
+                    // 发送GET请求
+                    HttpResponseMessage response = await httpClient.GetAsync(requestUrl);
+                    response.EnsureSuccessStatusCode();
 
-                        // 读取响应内容
-                        return await response.Content.ReadAsStringAsync();
-                    }
+                    // 读取响应内容
+                    return await response.Content.ReadAsStringAsync();
                 });
 
                 if (string.IsNullOrEmpty(jsonResult))
                 {
-                    return null;
+                    return new Mysoft();
                 }
 
                 // 反序列化外层JSON
                 var _JsonData = JsonConvert.DeserializeObject<Json2018K>(jsonResult);
                 if (_JsonData == null)
                 {
-                    return null;
+                    return new Mysoft();
                 }
 
                 // 解密数据
                 string JsonData = _JsonData.data != null ? AesDecrypt(_JsonData.data, Constants.DEVELOPER_KEY) : string.Empty;
                 if (string.IsNullOrEmpty(JsonData))
                 {
-                    return null;
+                    return new Mysoft();
                 }
 
                 // 反序列化内层JSON
                 var json2018K = JsonConvert.DeserializeObject<Json2018K>(JsonData);
                 if (json2018K == null)
                 {
-                    return null;
+                    return new Mysoft();
                 }
 
                 // 转换为Mysoft对象
-                return ConvertToMysoftConfig(json2018K);
+                var result = ConvertToMysoftConfig(json2018K);
+                return result ?? new Mysoft();
             }
             catch (Exception ex)
             {
                 // 记录错误日志（如果需要）
                 Log.Error($"获取软件信息失败: {ex.Message}");
                 Console.WriteLine($"获取软件信息失败: {ex.Message}");
-                return null;
+                return new Mysoft();
             }
         }
         /// <summary>
@@ -1138,7 +1142,7 @@ namespace HaiTang.library
         {
             if (source == null)
             {
-                return null;
+                return new Mysoft();
             }
 
             long _expriationDate;
@@ -1183,7 +1187,7 @@ namespace HaiTang.library
             };
         }
 
-        // <summary>
+        /// <summary>
         /// 获取用户所有信息并转换为USER对象
         /// </summary>
         /// <returns>返回Mysoft对象,如果获取失败返回null</returns>
@@ -1234,7 +1238,7 @@ namespace HaiTang.library
             // 保证返回非 null
             if(UserJsonData == null)
             {
-                return null;
+                return new UserInfo();
             }
             return ConvertToUserConfig(UserJsonData);
         }
@@ -1245,7 +1249,7 @@ namespace HaiTang.library
         {
             if (source == null)
             {
-                return null;
+                return new UserInfo();
             }
             return new UserInfo
             {
@@ -1283,7 +1287,7 @@ namespace HaiTang.library
         {
             public bool IsHealthy { get; set; } = true;
             public DateTime LastChecked { get; set; } = DateTime.MinValue;
-            public Exception LastError { get; set; }
+            public Exception? LastError { get; set; }
             public bool IsChecking { get; set; } // 防止重复检测
         }
 
@@ -1528,7 +1532,7 @@ namespace HaiTang.library
         /// </summary>
         private static async Task<string> ExecuteApiRequest(Func<string, Task<string>> requestFunc)
         {
-            Exception lastException = null;
+            Exception lastException;
             string bestApiUrl = GetBestAvailableApiUrl();
             // 如果检测到使用本地地址,直接返回空字符串,避免返回 null
             if (bestApiUrl == LocalApiUrl)

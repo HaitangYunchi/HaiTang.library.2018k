@@ -9,6 +9,15 @@
     <ApplicationIcon>upgrade.ico</ApplicationIcon>
     <Authors>HaiTangYunchi</Authors>
     <Copyright>Copyright © 2025 HaiTangYunchi. All rights reserved.</Copyright>
+    <Version>1.2</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

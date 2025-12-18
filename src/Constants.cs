@@ -26,7 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HaiTang.library.Utils
+namespace HaiTang.library
 {
     public static class Constants
     {

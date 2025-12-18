@@ -99,41 +99,38 @@ namespace upgrade
             }
         }
 
+        // 替换 DownloadFileAsync 方法，使用 HttpClient 代替已过时的 WebClient
         private async Task DownloadFileAsync(string url, string destinationPath, CancellationToken cancellationToken)
         {
-            using (WebClient client = new WebClient())
+            using HttpClient client = new();
+            using HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var totalBytes = response.Content.Headers.ContentLength ?? -1L;
+            var canReportProgress = totalBytes != -1;
+
+            using var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None, 81920, true);
+            var buffer = new byte[81920];
+            long totalRead = 0;
+            int read;
+            int lastProgress = 0;
+            while ((read = await contentStream.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken)) > 0)
             {
-                // 设置下载进度事件
-                client.DownloadProgressChanged += (s, e) =>
+                await fileStream.WriteAsync(buffer.AsMemory(0, read), cancellationToken);
+                totalRead += read;
+                if (canReportProgress)
                 {
-                    UpdateProgress(e.ProgressPercentage, $"正在下载: {e.BytesReceived / 1024 / 1024}MB / {e.TotalBytesToReceive / 1024 / 1024}MB");
-                };
-
-                // 创建TaskCompletionSource用于异步等待
-                var tcs = new TaskCompletionSource<bool>();
-
-                // 设置下载完成事件
-                client.DownloadFileCompleted += (s, e) =>
-                {
-                    if (e.Cancelled)
+                    int progress = (int)(totalRead * 100 / totalBytes);
+                    if (progress != lastProgress)
                     {
-                        tcs.SetCanceled();
+                        lastProgress = progress;
+                        UpdateProgress(progress, $"正在下载: {totalRead / 1024 / 1024}MB / {totalBytes / 1024 / 1024}MB");
                     }
-                    else if (e.Error != null)
-                    {
-                        tcs.SetException(e.Error);
-                    }
-                    else
-                    {
-                        tcs.SetResult(true);
-                    }
-                };
-
-                // 开始异步下载
-                client.DownloadFileAsync(new Uri(url), destinationPath);
-
-                // 等待下载完成或取消
-                await tcs.Task;
+                }
+            }
+            if (canReportProgress)
+            {
+                UpdateProgress(100, $"正在下载: {totalRead / 1024 / 1024}MB / {totalBytes / 1024 / 1024}MB");
             }
         }
 
@@ -165,7 +162,11 @@ namespace upgrade
             try
             {
                 // 获取主程序目录
-                string mainAppDir = Path.GetDirectoryName(_mainAssemblyPath);
+                string? mainAppDir = Path.GetDirectoryName(_mainAssemblyPath);
+                if (string.IsNullOrEmpty(mainAppDir))
+                {
+                    throw new Exception("无法获取主程序目录，_mainAssemblyPath 可能无效。");
+                }
 
                 // 遍历解压目录中的所有文件
                 string[] files = Directory.GetFiles(_tempExtractPath, "*.*", SearchOption.AllDirectories);
@@ -177,7 +178,11 @@ namespace upgrade
                     string destPath = Path.Combine(mainAppDir, relativePath);
 
                     // 确保目标目录存在
-                    string destDir = Path.GetDirectoryName(destPath);
+                    string? destDir = Path.GetDirectoryName(destPath);
+                    if (string.IsNullOrEmpty(destDir))
+                    {
+                        throw new Exception($"无法获取目标目录: {destPath}");
+                    }
                     if (!Directory.Exists(destDir))
                     {
                         Directory.CreateDirectory(destDir);

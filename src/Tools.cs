@@ -21,7 +21,6 @@
  *----------------------------------------------------------------*/
 
 
-using HaiTang.library.Utils;
 using System.Diagnostics;
 using System.Management;
 using System.Security.Cryptography;
@@ -443,7 +442,93 @@ namespace HaiTang.library
                 }
             }
         }
+        /// <summary>
+        /// 尝试将字符串转换为布尔值，支持多种常见格式
+        /// </summary>
+        /// <param name="value">要转换的字符串</param>
+        /// <param name="result">转换成功时输出的布尔值，转换失败时为 false</param>
+        /// <returns>如果转换成功返回 true，否则返回 false</returns>
+        /// <remarks>
+        /// 支持的格式包括：
+        /// - 真值：true, 1, yes, y, on, enable, enabled, active, t, ok, okay, correct, right, positive, affirmative, aye, si, da, ja, はい, 是,真, ✓, √
+        /// - 假值：false, 0, no, n, off, disable, disabled, inactive, f, cancel, wrong, incorrect, negative, nay, no way, non, nein, нет, いいえ, 否,假, ✗, ×
+        /// - 原生 bool.TryParse 支持的其他格式
+        /// </remarks>
+        public static bool ToBoolean(string value, out bool result)
+        {
+            result = false;
 
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            string normalized = value.Trim().ToLowerInvariant();
+
+            // 真值判断
+            switch (normalized)
+            {
+                case "true":
+                case "1":
+                case "yes":
+                case "y":
+                case "on":
+                case "enable":
+                case "enabled":
+                case "active":
+                case "t":
+                case "ok":
+                case "okay":
+                case "correct":
+                case "right":
+                case "positive":
+                case "affirmative":
+                case "aye":
+                case "si":
+                case "da":
+                case "ja":
+                case "はい":
+                case "是":
+                case "真":
+                case "✓":
+                case "√":
+                    result = true;
+                    return true;
+            }
+
+            // 假值判断
+            switch (normalized)
+            {
+                case "false":
+                case "0":
+                case "no":
+                case "n":
+                case "off":
+                case "disable":
+                case "disabled":
+                case "inactive":
+                case "f":
+                case "cancel":
+                case "wrong":
+                case "incorrect":
+                case "negative":
+                case "nay":
+                case "no way":
+                case "non":
+                case "nein":
+                case "нет":
+                case "いいえ":
+                case "否":
+                case "假":
+                case "✗":
+                case "×":
+                    result = false;
+                    return true;
+            }
+
+            // 回退到原生 bool.TryParse
+            return bool.TryParse(normalized, out result);
+        }
 
         #endregion
 

@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <PackageId>$(AssemblyName).2018k</PackageId>
     <Title>$(AssemblyName).2018k</Title>
-    <Version>1.4.8</Version>
+    <Version>1.5.0-alpha.1</Version>
     <Authors>HaiTangYunchi</Authors>
     <Product>$(AssemblyName).2018k</Product>
     <Description>提供与软件更新、用户管理、卡密验证、云变量操作等相关的 API 封装方法。
@@ -22,14 +22,15 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <PackageProjectUrl>https://www.nuget.org/packages/HaiTang.library.2018k</PackageProjectUrl>
+    <PackageReleaseNotes>修正了部分调用方式，哈希部分常量</PackageReleaseNotes>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<DebugType>embedded</DebugType>
+		<DebugType>none</DebugType>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DebugType>embedded</DebugType>
+		<DebugType>none</DebugType>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -40,7 +41,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-		<PackageReference Include="NLog" Version="6.0.6" />
+		<PackageReference Include="NLog" Version="6.0.7" />
 		<PackageReference Include="Obfuscar" Version="2.2.49">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -68,7 +69,7 @@
 		<None Include="$(OutputPath)*.exe" Pack="true" PackagePath="content\" />
 		<None Include="$(OutputPath)*.json" Pack="true" PackagePath="content\" />
 		<None Include="$(OutputPath)*.dll" Pack="true" PackagePath="content\" />
-		<None Include="$(OutputPath)*.xml" Pack="true" PackagePath="content\" />
+		<None Include="$(OutputPath)HaiTang.library.xml" Pack="true" PackagePath="content\" />
 		<None Include="$(OutputPath)*.targets" Pack="true" PackagePath="build/$(PackageId).targets" />
 	</ItemGroup>
 
