@@ -1,8 +1,8 @@
-# HaiTangYunchi.library.Update API 调用手册
+# HaiTang.Library.Api2018k.Update API 调用手册
 
 ## 概述
 
-HaiTang.library.Update 类提供了与 [2018k](http://2018k.cn) API 接口的完整封装，包括软件更新、用户管理、卡密验证、云变量操作等功能。本库支持多 API 地址故障转移、健康检测和加密通信。
+HHaiTang.Library.Api2018k.Update 类提供了与 [2018k](http://2018k.cn) API 接口的完整封装，包括软件更新、用户管理、卡密验证、云变量操作等功能。本库支持多 API 地址故障转移、健康检测和加密通信。
 
 ## 快速开始
 
@@ -13,8 +13,10 @@ HaiTang.library.Update 类提供了与 [2018k](http://2018k.cn) API 接口的完
 ```c#
 using HaiTang.Library.Api2018k;
 Update update = new();  // 实例化更新对象
-var softwareInfo = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");
+var (success，softwareInfo) = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");
 ```
+
+- **返回值**: `bool,MySoft` - 实例是否有效，软件信息对象Json
 
 #### **用户初始化**
 
@@ -27,14 +29,10 @@ var userInfo = await update.InitializationUserAsync("软件ID", "开发者密钥
 ### 1. 检测软件实例状态
 
 ```c#
-bool isValid = await update.GetSoftCheck("软件ID", "开发者密钥", "可选机器码");
+bool isValid = await update.GetSoftCheck();
 ```
 
-- **参数**:
-  - `ID`: 程序实例ID
-  - `key`: 开发者密钥
-  - `Code`: 机器码（可选，为空时自动获取）
-- **返回值**: `bool` - 实例是否有效
+- **返回值**: `bool` - 实例是否有效，方法已经合并到 InitializationAsync 中
 
 ### 2. 获取软件信息
 
