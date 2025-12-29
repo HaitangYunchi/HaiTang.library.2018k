@@ -25,7 +25,7 @@ using NLog;
 using NLog.Config;
 using NLog.Targets;
 
-namespace HaiTang.library
+namespace HaiTang.Library.Api2018k
 {
     /// <summary>
     /// 提供应用程序日志记录功能的静态类

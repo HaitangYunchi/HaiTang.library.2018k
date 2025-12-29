@@ -11,7 +11,7 @@ HaiTang.library.Update 类提供了与 [2018k](http://2018k.cn) API 接口的完
 #### **软件实例初始化**
 
 ```c#
-using HaiTang.library;
+using HaiTang.Library.Api2018k;
 Update update = new();  // 实例化更新对象
 var softwareInfo = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");
 ```
@@ -41,7 +41,7 @@ bool isValid = await update.GetSoftCheck("软件ID", "开发者密钥", "可选�
 #### 初始化后直接调用
 
 ```c#
-using HaiTang.library;
+using HaiTang.Library.Api2018k;
 Update update = new();  // 实例化更新对象
 var softwareInfo = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");
 
@@ -468,7 +468,7 @@ Log.Fatal("未处理的异常导致应用程序终止");
 ```c#
 using System;
 using System.Threading.Tasks;
-using HaiTang.library;
+using HaiTang.Library.Api2018k;
 
 class Program
 {
@@ -539,7 +539,7 @@ class Program
 ```c#
 using System;
 using System.Windows.Forms;
-using HaiTang.library;
+using HaiTang.Library.Api2018k;
 
 namespace WinFormsApp
 {
@@ -627,7 +627,7 @@ namespace WinFormsApp
 using System;
 using System.Windows;
 using System.Windows.Threading;
-using HaiTang.library;
+using HaiTang.Library.Api2018k;
 
 namespace WpfApp
 {
@@ -769,7 +769,7 @@ namespace WpfApp
 ### 完整软件验证流程
 
 ```c#
-using HaiTang.library;
+using HaiTang.Library.Api2018k;
 Update update = new();  // 实例化更新对象
 
 // 1. 初始化并检查软件状态
@@ -818,4 +818,4 @@ string balance = await update.GetUserBalance();
 string rechargeResult = await update.Recharge("card_id");
 ```
 
-这个调用手册涵盖了 HaiTang.library.Update 类的主要公开 API 方法，包括参数说明、返回值说明和使用示例。使用时请根据实际需求选择合适的API方法。
+这个调用手册涵盖了 HaiTang.Library.Api2018k.Update 类的主要公开 API 方法，包括参数说明、返回值说明和使用示例。使用时请根据实际需求选择合适的API方法。

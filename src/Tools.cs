@@ -2,7 +2,7 @@
  * 版权所有 (c) 2025 HaiTangYunchi  保留所有权利
  * CLR版本：4.0.30319.42000
  * 公司名称：HaiTangYunchi
- * 命名空间：HaiTang.library
+ * 命名空间： HaiTang.Library.Api2018k
  * 唯一标识：0a956093-73f2-4926-a70c-6d6a72c6ebf5
  * 文件名：Tools
  * 
@@ -27,7 +27,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 
-namespace HaiTang.library
+namespace HaiTang.Library.Api2018k
 {
     public class Tools
     {

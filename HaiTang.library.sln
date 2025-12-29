@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36623.8
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11304.174 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HaiTang.library", "src\HaiTang.library.csproj", "{7C594379-2CC4-48E6-89C0-0E4C8FAB4F8F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HaiTang.Library.2018k", "src\HaiTang.Library.2018k.csproj", "{7C594379-2CC4-48E6-89C0-0E4C8FAB4F8F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "upgrade", "upgrade\upgrade.csproj", "{C10C16BE-135A-4071-AD77-319EFC1CE5E7}"
 EndProject

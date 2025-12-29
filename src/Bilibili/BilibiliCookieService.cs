@@ -24,7 +24,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
-namespace HaiTang.library.Bilibili
+namespace HaiTang.Library.Api2018k.Bilibili
 {
     /// <summary>
     /// B站Cookie服务类
@@ -37,7 +37,7 @@ namespace HaiTang.library.Bilibili
         private readonly DeviceInfo _deviceInfo;
         private CancellationTokenSource _pollingCancellationTokenSource;
 
-        // 修改：添加DeviceInfo参数
+        // 添加DeviceInfo参数
         public BilibiliCookieService(string cookieFilePath = "cookies.dat", DeviceInfo deviceInfo = null)
         {
             _cookieFilePath = cookieFilePath;
@@ -45,10 +45,10 @@ namespace HaiTang.library.Bilibili
 
             _httpClient = new HttpClient();
 
-            // 修改：使用完整的设备信息用户代理
+            // 使用完整的设备信息用户代理
             _httpClient.DefaultRequestHeaders.Add("User-Agent", _deviceInfo.GetFullUserAgent());
 
-            // 修改：添加更多设备标识头信息
+            // 添加更多设备标识头信息
             _httpClient.DefaultRequestHeaders.Add("X-Device-Id", _deviceInfo.DeviceId);
             _httpClient.DefaultRequestHeaders.Add("X-Device-Name", _deviceInfo.DeviceName);
             _httpClient.DefaultRequestHeaders.Add("X-App-Name", _deviceInfo.AppName);
@@ -61,7 +61,7 @@ namespace HaiTang.library.Bilibili
         {
             try
             {
-                // 修改：添加设备信息到请求参数
+                // 添加设备信息到请求参数
                 var url = $"https://passport.bilibili.com/x/passport-login/web/qrcode/generate?device_name={Uri.EscapeDataString(_deviceInfo.DeviceName)}";
                 var response = await _httpClient.GetStringAsync(url);
                 using var doc = JsonDocument.Parse(response);
@@ -97,7 +97,7 @@ namespace HaiTang.library.Bilibili
                 {
                     try
                     {
-                        // 修改：在轮询请求中添加设备信息
+                        // 在轮询请求中添加设备信息
                         var url = $"https://passport.bilibili.com/x/passport-login/web/qrcode/poll?qrcode_key={qrcodeKey}&device_name={Uri.EscapeDataString(_deviceInfo.DeviceName)}";
                         var response = await _httpClient.GetAsync(url, _pollingCancellationTokenSource.Token);
 
@@ -123,7 +123,7 @@ namespace HaiTang.library.Bilibili
                                     result.RefreshToken = refreshToken.GetString() ?? string.Empty;
                                 }
 
-                                // 修改：在登录结果中添加设备信息
+                                // 在登录结果中添加设备信息
                                 result.DeviceInfo = _deviceInfo;
 
                                 progress?.Report("登录成功！");
@@ -228,7 +228,7 @@ namespace HaiTang.library.Bilibili
                     RefreshToken = loginResult.RefreshToken,
                     LastUpdate = DateTime.Now,
                     ExpireTime = DateTime.Now.AddMonths(1),
-                    // 修改：保存设备信息
+                    // 保存设备信息
                     DeviceInfo = _deviceInfo
                 };
 
@@ -237,11 +237,11 @@ namespace HaiTang.library.Bilibili
                     WriteIndented = true,
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 });
-
-                byte[] encryptedBytes = ProtectedData.Protect(
-                    Encoding.UTF8.GetBytes(json),
-                    null,
-                    DataProtectionScope.LocalMachine);
+                byte[] encryptedBytes = Encoding.UTF8.GetBytes(json);
+                //byte[] encryptedBytes = ProtectedData.Protect(
+                //    Encoding.UTF8.GetBytes(json),
+                //    null,
+                //    DataProtectionScope.LocalMachine);
 
                 File.WriteAllBytes(_cookieFilePath, encryptedBytes);
             }
@@ -261,8 +261,8 @@ namespace HaiTang.library.Bilibili
                 }
 
                 byte[] encryptedBytes = File.ReadAllBytes(_cookieFilePath);
-                byte[] decryptedBytes = ProtectedData.Unprotect(encryptedBytes, null, DataProtectionScope.LocalMachine);
-                string json = Encoding.UTF8.GetString(decryptedBytes);
+                //byte[] decryptedBytes = ProtectedData.Unprotect(encryptedBytes, null, DataProtectionScope.LocalMachine);
+                string json = Encoding.UTF8.GetString(encryptedBytes);
 
                 return JsonSerializer.Deserialize<CookieData>(json, new JsonSerializerOptions
                 {

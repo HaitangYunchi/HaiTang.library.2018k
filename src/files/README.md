@@ -2,7 +2,7 @@
 
 ## 概述
 
-HaiTang.library.Update 类提供了与 [2018k](http://2018k.cn) API 接口的完整封装，包括软件更新、用户管理、卡密验证、云变量操作等功能。本库支持多 API 地址故障转移、健康检测和加密通信。
+HaiTang.library.2018k.Update 类提供了与 [2018k](http://2018k.cn) API 接口的完整封装，包括软件更新、用户管理、卡密验证、云变量操作等功能。本库支持多 API 地址故障转移、健康检测和加密通信。
 
 ## 快速开始
 
@@ -11,10 +11,16 @@ HaiTang.library.Update 类提供了与 [2018k](http://2018k.cn) API 接口的完
 #### **软件实例初始化**
 
 ```c#
-using HaiTang.library;
+using HaiTang.Library.Api2018k;
 Update update = new();  // 实例化更新对象
-var softwareInfo = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");
+var (isValid,softwareInfo) = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");
 ```
+
+- **参数**:
+  - `ID`: 程序实例ID
+  - `key`: 开发者密钥
+  - `Code`: 机器码（可选，为空时自动获取）
+- **返回值**: `(success.Mysoft)` - bool实例状态，Mysoft软件信息
 
 #### **用户初始化**
 
@@ -27,21 +33,17 @@ var userInfo = await update.InitializationUserAsync("软件ID", "开发者密钥
 ### 1. 检测软件实例状态
 
 ```c#
-bool isValid = await update.GetSoftCheck("软件ID", "开发者密钥", "可选机器码");
+bool isValid = await update.GetSoftCheck();
 ```
 
-- **参数**:
-  - `ID`: 程序实例ID
-  - `key`: 开发者密钥
-  - `Code`: 机器码（可选，为空时自动获取）
 - **返回值**: `bool` - 实例是否有效
 
 ### 2. 获取软件信息
 
-#### 初始化后直接调用
+#### 初始化后直接调用（没有缓存）
 
 ```c#
-using HaiTang.library;
+using HaiTang.Library.Api2018k;
 Update update = new();  // 实例化更新对象
 var softwareInfo = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");
 
@@ -56,7 +58,7 @@ bool isItEffective = softwareInfo.isItEffective ;       // 是否激活
 long expirationDate = softwareInfo.expirationDate;	// 过期时间戳(毫秒)
 ```
 
-#### 方法获取特定信息
+#### 方法获取特定信息（带有缓存的获取信息）
 
 ```c#
 string allInfo = await update.GetSoftAll();			// 返回格式化的JSON字符串
@@ -468,7 +470,7 @@ Log.Fatal("未处理的异常导致应用程序终止");
 ```c#
 using System;
 using System.Threading.Tasks;
-using HaiTang.library;
+using HaiTang.Library.Api2018k;
 
 class Program
 {
@@ -539,7 +541,7 @@ class Program
 ```c#
 using System;
 using System.Windows.Forms;
-using HaiTang.library;
+using HaiTang.Library.Api2018k;
 
 namespace WinFormsApp
 {
@@ -627,7 +629,7 @@ namespace WinFormsApp
 using System;
 using System.Windows;
 using System.Windows.Threading;
-using HaiTang.library;
+using HaiTang.Library.Api2018k;
 
 namespace WpfApp
 {
@@ -769,7 +771,7 @@ namespace WpfApp
 ### 完整软件验证流程
 
 ```c#
-using HaiTang.library;
+using HaiTang.Library.Api2018k;
 Update update = new();  // 实例化更新对象
 
 // 1. 初始化并检查软件状态
@@ -818,4 +820,4 @@ string balance = await update.GetUserBalance();
 string rechargeResult = await update.Recharge("card_id");
 ```
 
-这个调用手册涵盖了 HaiTang.library.Update 类的主要公开 API 方法，包括参数说明、返回值说明和使用示例。使用时请根据实际需求选择合适的API方法。
+这个调用手册涵盖了 HaiTang.Library.Api2018k.Update 类的主要公开 API 方法，包括参数说明、返回值说明和使用示例。使用时请根据实际需求选择合适的API方法。

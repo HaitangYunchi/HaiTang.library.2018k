@@ -22,7 +22,7 @@
 
 using System.Text.Json;
 
-namespace HaiTang.library.Bilibili
+namespace HaiTang.Library.Api2018k.Bilibili
 {
     /// <summary>
     /// B站用户信息服务类 - 更健壮的版本，添加设备信息支持

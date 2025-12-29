@@ -25,7 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HaiTang.library.Models
+namespace HaiTang.Library.Api2018k.Models
 {
     public class Json2018K
     {

@@ -22,7 +22,7 @@
 
 
 
-namespace HaiTang.library.Bilibili
+namespace HaiTang.Library.Api2018k.Bilibili
 {
     /// <summary>
     /// 扫码登录结果模型 - 添加设备信息支持
@@ -37,10 +37,10 @@ namespace HaiTang.library.Bilibili
         public string RefreshToken { get; set; } = string.Empty;
         public DateTime LoginTime { get; set; } = DateTime.Now;
 
-        // 修改：添加设备信息字段
+        // 添加设备信息字段
         public DeviceInfo DeviceInfo { get; set; } = new DeviceInfo();
 
-        // 修改：添加用户信息字段，用于实时传递
+        // 添加用户信息字段，用于实时传递
         public Dictionary<string, object> UserInfo { get; set; } = new Dictionary<string, object>();
     }
 }

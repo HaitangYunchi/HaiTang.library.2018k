@@ -21,7 +21,7 @@
  *----------------------------------------------------------------*/
 
 
-namespace HaiTang.library.Bilibili
+namespace HaiTang.Library.Api2018k.Bilibili
 {
     /// <summary>
     /// Cookie数据模型 - 添加设备信息支持
@@ -35,7 +35,7 @@ namespace HaiTang.library.Bilibili
         public DateTime LastUpdate { get; set; } = DateTime.Now;
         public DateTime ExpireTime { get; set; } = DateTime.Now.AddMonths(1);
 
-        // 修改：添加设备信息
+        // 添加设备信息
         public DeviceInfo DeviceInfo { get; set; } = new DeviceInfo();
     }
 }

@@ -24,7 +24,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace HaiTang.library.Bilibili
+namespace HaiTang.Library.Api2018k.Bilibili
 {
     /// <summary>
     /// 用户信息模型

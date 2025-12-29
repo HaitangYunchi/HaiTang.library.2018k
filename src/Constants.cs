@@ -21,12 +21,12 @@
  *----------------------------------------------------------------*/
 
 
-using HaiTang.library.Models;
+using HaiTang.Library.Api2018k.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HaiTang.library
+namespace HaiTang.Library.Api2018k
 {
     public static class Constants
     {

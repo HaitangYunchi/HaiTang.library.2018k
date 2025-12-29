@@ -10,5 +10,5 @@
 	<Var name="UseUnicodeNames" value="true" />
 	<Var name="HideStrings" value="true" />
 	<Var name="ReuseNames" value="true" />
-	<Module file="$(InPath)\HaiTang.library.dll" />
+	<Module file="$(InPath)\HaiTang.Library.2018k.dll" />
 </Obfuscator>

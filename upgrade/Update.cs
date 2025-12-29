@@ -148,12 +148,22 @@ namespace upgrade
                 // 解压ZIP文件
                 ZipFile.ExtractToDirectory(_tempDownloadPath, _tempExtractPath);
 
-                // 删除临时下载文件
-                File.Delete(_tempDownloadPath);
             }
             catch (Exception ex)
             {
                 throw new Exception($"解压失败: {ex.Message}");
+            }
+            finally
+            {
+                // 删除临时下载文件
+                try
+                {
+                    if (File.Exists(_tempDownloadPath))
+                    {
+                        File.Delete(_tempDownloadPath);
+                    }
+                }
+                catch { }
             }
         }
 
@@ -197,13 +207,23 @@ namespace upgrade
                         lblFileName.Text = $"正在更新: {Path.GetFileName(file)}";
                     }));
                 }
-
-                // 删除临时解压目录
-                Directory.Delete(_tempExtractPath, true);
+              
             }
             catch (Exception ex)
             {
                 throw new Exception($"文件复制失败: {ex.Message}");
+            }
+            finally
+            {
+                // 清理临时解压目录
+                try
+                {
+                    if (Directory.Exists(_tempExtractPath))
+                    {
+                        Directory.Delete(_tempExtractPath, true);
+                    }
+                }
+                catch { }
             }
         }
 

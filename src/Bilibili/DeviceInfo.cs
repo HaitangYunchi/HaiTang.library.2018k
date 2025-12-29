@@ -22,7 +22,7 @@
 
 using System.Net.NetworkInformation;
 
-namespace HaiTang.library.Bilibili
+namespace HaiTang.Library.Api2018k.Bilibili
 {
     /// <summary>
     /// 设备信息模型 - 增强版本，支持B站设备识别
@@ -47,7 +47,7 @@ namespace HaiTang.library.Bilibili
         /// <summary>
         /// 应用名称
         /// </summary>
-        public string AppName { get; set; } = "Mihoyo_Tools";
+        public string AppName { get; set; } = "GenshinConvert";
 
         /// <summary>
         /// 应用版本
@@ -73,7 +73,7 @@ namespace HaiTang.library.Bilibili
                 // 生成MD5哈希作为设备ID
                 using (var md5 = System.Security.Cryptography.MD5.Create())
                 {
-                    var input = $"{macAddress}-{machineName}-{up2018.Update.Salt}";
+                    var input = $"{macAddress}-{machineName}";
                     var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
                     return BitConverter.ToString(hash).Replace("-", "").ToLower();
                 }
@@ -112,16 +112,7 @@ namespace HaiTang.library.Bilibili
         /// </summary>
         private static string GetPcDeviceName()
         {
-            try
-            {
-                string machineName = Environment.MachineName;
-                string userName = Environment.UserName;
-                return $"{userName}的电脑[{machineName}]";
-            }
-            catch
-            {
-                return "Windows PC";
-            }
+            return "Windows_PC";
         }
 
         /// <summary>

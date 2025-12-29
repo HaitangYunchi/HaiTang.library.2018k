@@ -2,9 +2,9 @@
  * 版权所有 (c) 2025 HaiTangYunchi  保留所有权利
  * CLR版本：4.0.30319.42000
  * 公司名称：HaiTangYunchi
- * 命名空间：HaiTang.library
+ * 命名空间： HaiTang.Library.Api2018k
  * 唯一标识：62a74e2f-ef1d-4b37-956d-2e572887051c
- * 文件名：2018k
+ * 文件名：Update
  * 
  * 创建者：海棠云螭
  * 电子邮箱：haitangyunchi@126.com
@@ -21,7 +21,7 @@
  *----------------------------------------------------------------*/
 
 
-using HaiTang.library.Models;
+using HaiTang.Library.Api2018k.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.NetworkInformation;
@@ -30,7 +30,7 @@ using System.Text;
 //using Formatting = Newtonsoft.Json.Formatting;
 
 
-namespace HaiTang.library
+namespace HaiTang.Library.Api2018k
 {
     /// <summary>
     /// 提供与软件更新、用户管理、卡密验证、云变量操作等相关的 API 封装方法。
@@ -70,6 +70,7 @@ namespace HaiTang.library
         #region 静态缓存字段和方法
         // 静态缓存字段
         private static Mysoft? _cachedSoftwareInfo = null;
+        private static bool _isSoftwareSuccess= false;
         private static DateTime _lastCacheTime = DateTime.MinValue;
         private static readonly object _cacheLock = new();
         private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
@@ -94,11 +95,12 @@ namespace HaiTang.library
         /// <summary>
         /// 设置缓存的软件信息（线程安全）
         /// </summary>
-        public static void SetCachedSoftwareInfo(Mysoft softwareInfo)
+        public static void SetCachedSoftwareInfo(bool success,Mysoft softwareInfo)
         {
             lock (_cacheLock)
             {
                 _cachedSoftwareInfo = softwareInfo;
+                _isSoftwareSuccess = success;
                 _lastCacheTime = DateTime.Now;
             }
         }
@@ -182,116 +184,80 @@ namespace HaiTang.library
         #region 软件实例方法
         
 
+
         /// <summary>
-        /// 检测实例是否正常 （ 程序实例ID,机器码 [null] ）
+        /// 初始化并检测实例是否正常 (程序实例ID, OpenID, 机器码 [null])
         /// </summary>
         /// <param name="ID">程序实例ID</param>
         /// <param name="key">OpenID</param>
         /// <param name="Code">机器码,可以省略</param>
-        /// <returns>返回布尔值 如果 Code 为空,机器码为空时,使用自带的机器码</returns>
-        public async Task<bool> GetSoftCheck(string ID, string key, string? Code = null)
+        /// <returns>返回元组 (检查结果, Mysoft配置数据) 如果检查失败，Mysoft为null</returns>
+        public async Task<(bool Success, Mysoft? config)> InitializationAsync(string ID, string key, string? Code = null)
         {
-            string _result;
+            // 初始化常量
             if (string.IsNullOrEmpty(Code))
             {
                 Code = Tools.GetMachineCodeEx();
             }
-            Constants.SOFTWARE_ID = ID;        // 设置
-            Constants.DEVELOPER_KEY = key;     // 设置
+
+            Constants.SOFTWARE_ID = ID;
+            Constants.DEVELOPER_KEY = key;
             Constants.LOCAL_MACHINE_CODE = Code;
-            _result = await ExecuteApiRequest(async (apiUrl) =>
-            {
-                using (HttpClient httpClient = new())
-                {
-                    // 构建请求URL
-                    string requestUrl = $"{apiUrl}/v3/obtainSoftware?softwareId={ID}&machineCode={Code}&isAPI=y";
-                    // 发送GET请求
-                    HttpResponseMessage response = await httpClient.GetAsync(requestUrl);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        return "false";
-                    }
-                    else
-                    {
-                        // 读取响应内容
-                        string jsonString = await response.Content.ReadAsStringAsync();
-                        Json2018K? _JsonData = JsonConvert.DeserializeObject<Json2018K>(jsonString);
 
-                        try
-                        {
-                            // 尝试解密数据,失败则直接返回 false
-                            string JsonData = _JsonData?.data != null ? AesDecrypt(_JsonData.data, key) : string.Empty;
-                            Json2018K? _Data = JsonConvert.DeserializeObject<Json2018K>(JsonData);
-                            if (_Data != null)
-                            {
-                                Mysoft config = ConvertToMysoftConfig(_Data);
-                                return (_Data != null && _Data.user != null) ? "true" : "false";
-                            }
-                            else
-                            {
-                                return "false";
-                            }
-                        }
-                        catch
-                        {
-                            return "false";
-                        }
-                    }
-                }
-            });
-
-            return bool.TryParse(_result, out bool result) && result; // 解析失败也返回 false
-        }
-
-        /// <summary>
-        /// 初始化 后续方法都是在初始化后调用 ( 程序实例ID,OpenID,机器码 [null] )
-        /// </summary>
-        /// <param name="ID">程序实例ID</param>
-        /// <param name="key">OpenID</param>
-        /// <param name="Code">机器码,可以省略</param>
-        /// <returns>返回 Mysoft类 机器码为空时,使用自带的机器码</returns>
-        public async Task<Mysoft> InitializationAsync(string ID, string key, string? Code = null)
-        {
-            if (string.IsNullOrEmpty(Code))
-            {
-                Code = Tools.GetMachineCodeEx();
-            }
-            Constants.SOFTWARE_ID = ID;        // 设置
-            Constants.DEVELOPER_KEY = key;     // 设置
-            Constants.LOCAL_MACHINE_CODE = Code;
             // 检查缓存是否有效
             if (IsCacheValid())
             {
-                return GetCachedSoftwareInfo();
+                var cachedInfo = GetCachedSoftwareInfo();
+                return (cachedInfo.author != null, cachedInfo);
             }
 
-            // 获取新数据
-            var softwareInfo = await GetSoftwareInfoAsync();
-
-            if (softwareInfo != null)
+            try
             {
-                SetCachedSoftwareInfo(softwareInfo);
+                // 获取新数据
+                var softwareInfo = await GetSoftwareInfoAsync().ConfigureAwait(false);
+
+                // 如果有有效的 author，则更新缓存
+                if (softwareInfo?.author != null)
+                {
+                    SetCachedSoftwareInfo(true, softwareInfo);
+                }
+
+                return (softwareInfo?.author != null, softwareInfo);
+            }
+            catch (Exception ex)
+            {
+                // 记录异常信息
+                Log.Error(ex, "获取软件信息时发生异常");
+                return (false, null);
             }
 
-            return softwareInfo;
+        }
+
+        /// <summary>
+        /// 检查实例是否正常（如果只需要检查结果，不需要配置数据）
+        /// </summary>
+        /// [Obsolete("合并到InitializationAsync()方法中，2027年01月01日正式禁用此方法", false)]
+        public async Task<bool> GetSoftCheck()
+        {
+            var (Success, _) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            return Success;
         }
 
         /// <summary>
         /// 获取软件全部信息
         /// </summary>
         /// <returns>返回 Json 字符串</returns>
-        public async Task<string> GetSoftAll()
+        public async Task<Mysoft> GetSoftAll()
         {
             // 获取Mysoft对象
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_,softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
 
             if (softwareInfo == null)
             {
-                return _error;
+                return null;
             }
 
-            // 将Mysoft对象序列化为格式化的JSON字符串
-            return JsonConvert.SerializeObject(softwareInfo, Formatting.Indented);
+            return softwareInfo;
         }
 
         /// <summary>
@@ -300,7 +266,7 @@ namespace HaiTang.library
         /// <returns>string 返回实例ID</returns>
         public async Task<string> GetSoftwareID()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.softwareId ?? _error;
         }
 
@@ -310,7 +276,7 @@ namespace HaiTang.library
         /// <returns>string 返回软件版本号</returns>
         public async Task<string> GetVersionNumber()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.versionNumber ?? _error;
         }
 
@@ -320,7 +286,7 @@ namespace HaiTang.library
         /// <returns>string 返回软件名称</returns>
         public async Task<string> GetSoftwareName()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.softwareName ?? _error;
         }
 
@@ -330,7 +296,7 @@ namespace HaiTang.library
         /// <returns>string 返回软件更新信息</returns>
         public async Task<string> GetVersionInformation()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.versionInformation ?? _error;
         }
 
@@ -340,7 +306,7 @@ namespace HaiTang.library
         /// <returns>string 返回软件公告信息</returns>
         public async Task<string> GetNotice()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.notice ?? _error;
         }
 
@@ -350,7 +316,7 @@ namespace HaiTang.library
         /// <returns>string 返回软件下载链接</returns>
         public async Task<string> GetDownloadLink()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.downloadLink ?? _error;
         }
 
@@ -361,7 +327,7 @@ namespace HaiTang.library
         /// <returns>string 返回软件访问量数据 非实时</returns>
         public async Task<string> GetNumberOfVisits()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.numberOfVisits.ToString() ?? _error;
         }
 
@@ -371,7 +337,7 @@ namespace HaiTang.library
         /// <returns>string 返回软件最低版本号,机器码可空</returns>
         public async Task<string> GetMiniVersion()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.miniVersion ?? _error;
         }
 
@@ -381,7 +347,7 @@ namespace HaiTang.library
         /// <returns>bool 返回卡密当前状态是否有效, 一般为判断软件是否注册 True  , False </returns>
         public async Task<bool> GetIsItEffective()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.isItEffective ?? false;
         }
 
@@ -391,7 +357,7 @@ namespace HaiTang.library
         /// <returns>string 返回软件卡密时间戳</returns>
         public async Task<string> GetExpirationDate()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.expirationDate.ToString() ?? _error;
         }
 
@@ -401,7 +367,7 @@ namespace HaiTang.library
         /// <returns>string 返回卡密备注</returns>
         public async Task<string> GetRemarks()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.networkVerificationRemarks ?? _error;
         }
 
@@ -411,7 +377,7 @@ namespace HaiTang.library
         /// <returns>string 返回卡密有效期类型, 卡密有效期天数</returns>
         public async Task<string> GetNumberOfDays()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.numberOfDays.ToString() ?? _error;
         }
 
@@ -421,7 +387,7 @@ namespace HaiTang.library
         /// <returns>string 返回卡密ID</returns>
         public async Task<string> GetNetworkVerificationId()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.networkVerificationId ?? _error;
         }
 
@@ -431,7 +397,7 @@ namespace HaiTang.library
         /// <returns>string 返回服务器时间, 时间戳</returns>
         public async Task<string> GetTimeStamp()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.timeStamp.ToString() ?? _error;
         }
 
@@ -441,7 +407,7 @@ namespace HaiTang.library
         /// <returns>bool 返回软件是否强制更新</returns>
         public async Task<bool> GetMandatoryUpdate()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.mandatoryUpdate ?? false;
         }
 
@@ -451,7 +417,7 @@ namespace HaiTang.library
         /// <returns>string 返回软件MD5</returns>
         public async Task<string> GetSoftwareMd5()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
             return softwareInfo?.softwareMd5 ?? _error;
         }
 
@@ -462,8 +428,8 @@ namespace HaiTang.library
         /// <returns>string 返回云变量的值</returns>
         public async Task<string> GetCloudVariables(string VarName)
         {
-            bool _Check = await GetSoftCheck(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY);
-            if (_Check == false)
+            bool Success = await GetSoftCheck();
+            if (Success == false)
             {
                 return _error;
             }
@@ -693,7 +659,7 @@ namespace HaiTang.library
         /// <returns>长整数类型long 永久返回-1,过期返回0,未注册返回1,其余返回时间戳,</returns>
         public async Task<long> GetRemainingUsageTime()
         {
-            var softwareInfo = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
+            var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
 
             if (softwareInfo == null)
             {
@@ -736,8 +702,8 @@ namespace HaiTang.library
         /// <returns>string 返回验证码</returns>
         public async Task<string> GetNetworkCode()
         {
-            bool _logon = await GetSoftCheck(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY);
-            if (_logon == false)
+            bool Success = await GetSoftCheck();
+            if (Success == false)
             {
                 return _error;
             }
