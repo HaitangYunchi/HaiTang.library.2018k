@@ -4,7 +4,7 @@
  * 公司名称：HaiTangYunchi
  * 命名空间： HaiTang.Library.Api2018k
  * 唯一标识：62a74e2f-ef1d-4b37-956d-2e572887051c
- * 文件名：Update
+ * 文件名：Api2018k
  * 
  * 创建者：海棠云螭
  * 电子邮箱：haitangyunchi@126.com
@@ -69,15 +69,15 @@ namespace HaiTang.Library.Api2018k
 
         #region 静态缓存字段和方法
         // 静态缓存字段
-        private static Mysoft? _cachedSoftwareInfo = null;
+        private static Mysoft _cachedSoftwareInfo = new();
         private static bool _isSoftwareSuccess= false;
         private static DateTime _lastCacheTime = DateTime.MinValue;
         private static readonly object _cacheLock = new();
         private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
 
-        private static UserInfo? _cachedUserInfo = null;
+        private static UserInfo _cachedUserInfo = new();
         private static DateTime _userLastCacheTime = DateTime.MinValue;
-        private static readonly object _UserCacheLock = new object();
+        private static readonly object _UserCacheLock = new();
         private static readonly TimeSpan UserCacheDuration = TimeSpan.FromMinutes(5);
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace HaiTang.Library.Api2018k
         {
             lock (_cacheLock)
             {
-                _cachedSoftwareInfo = null;
+                _cachedSoftwareInfo = new();
                 _lastCacheTime = DateTime.MinValue;
             }
         }
@@ -175,7 +175,7 @@ namespace HaiTang.Library.Api2018k
         {
             lock (_UserCacheLock)
             {
-                _cachedUserInfo = null;
+                _cachedUserInfo = new();
                 _userLastCacheTime = DateTime.MinValue;
             }
         }
@@ -252,9 +252,9 @@ namespace HaiTang.Library.Api2018k
             // 获取Mysoft对象
             var (_,softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
 
-            if (softwareInfo == null)
+            if (softwareInfo?.author == null)
             {
-                return null;
+                return new Mysoft(); ;
             }
 
             return softwareInfo;
@@ -362,7 +362,7 @@ namespace HaiTang.Library.Api2018k
         }
 
         /// <summary>
-        /// 获取卡密备注
+        /// 获取授权备注
         /// </summary>
         /// <returns>string 返回卡密备注</returns>
         public async Task<string> GetRemarks()
@@ -372,7 +372,7 @@ namespace HaiTang.Library.Api2018k
         }
 
         /// <summary>
-        /// 获取卡密有效期类型
+        /// 获取授权有效期类型
         /// </summary>
         /// <returns>string 返回卡密有效期类型, 卡密有效期天数</returns>
         public async Task<string> GetNumberOfDays()
@@ -382,7 +382,7 @@ namespace HaiTang.Library.Api2018k
         }
 
         /// <summary>
-        /// 获取卡密ID
+        /// 获取授权ID
         /// </summary>
         /// <returns>string 返回卡密ID</returns>
         public async Task<string> GetNetworkVerificationId()
@@ -811,26 +811,26 @@ namespace HaiTang.Library.Api2018k
             // 获取新数据
             var userInfo = await GetUserInfoAsync();
 
-            if (userInfo != null)
+            if (userInfo.Email != string.Empty)
             {
                 SetCachedUserInfo(userInfo);
             }
+            return userInfo ?? new UserInfo();
 
-            return userInfo;
         }
 
         /// <summary>
         /// 获取用户所有信息
         /// </summary>
         /// <returns>返回JSON</returns>
-        public async Task<string> GetUserInfo()
+        public async Task<UserInfo> GetUserInfo()
         {
              var userInfo = await InitializationUserAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.EMAIL, Constants.PASSWORD);
-            if (userInfo == null)
+            if (userInfo.Email == string.Empty)
             {
-                return _worring;
+                return new UserInfo();
             }
-            return JsonConvert.SerializeObject(userInfo, Formatting.Indented);
+            return userInfo;
         }
 
         /// <summary>
@@ -1070,7 +1070,7 @@ namespace HaiTang.Library.Api2018k
 
                 // 反序列化外层JSON
                 var _JsonData = JsonConvert.DeserializeObject<Json2018K>(jsonResult);
-                if (_JsonData == null)
+                if (_JsonData?.user == null)
                 {
                     return new Mysoft();
                 }

@@ -1,4 +1,4 @@
-# HaiTangYunchi.library.Update API 调用手册
+# HaiTangYunchi.library.2018k API 调用手册
 
 ## 概述
 
@@ -61,7 +61,7 @@ long expirationDate = softwareInfo.expirationDate;	// 过期时间戳(毫秒)
 #### 方法获取特定信息（带有缓存的获取信息）
 
 ```c#
-string allInfo = await update.GetSoftAll();			// 返回格式化的JSON字符串
+var allInfo = await update.GetSoftAll();			// 返回格式化的JSON
 string softwareId = await update.GetSoftwareID();        	// 实例ID
 string version = await update.GetVersionNumber();       	// 版本号
 string name = await update.GetSoftwareName();            	// 软件名称
