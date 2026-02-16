@@ -44,8 +44,7 @@ namespace HaiTang.Library.Api2018k.SDK
         /// <param name="account">账号</param>
         /// <param name="password">密码</param>
         /// <returns>布尔值</returns>
-        /// <exception cref="Exception">请求异常</exception>
-        public async Task<bool> LoginAsync(string account, string password)
+        public async Task<(bool Success, string Message)> LoginAsync(string account, string password)
         {
             try
             {
@@ -65,13 +64,12 @@ namespace HaiTang.Library.Api2018k.SDK
                 var result = JsonConvert.DeserializeObject<ApiResult<dynamic>>(responseContent);
 
                 Token = result?.Data?.token?.ToString() ?? string.Empty;
-                return IsAuthenticated;
+                return (IsAuthenticated, Token);
             }
             catch (Exception ex)
             {
                 Token = string.Empty;
-                return false;
-                throw new Exception("请求异常");
+                return (false, $"登录失败: {ex.Message}");
             }
         }
 

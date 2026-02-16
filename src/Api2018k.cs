@@ -27,6 +27,7 @@ using Newtonsoft.Json.Linq;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Encodings.Web;
 //using Formatting = Newtonsoft.Json.Formatting;
 
 
@@ -470,6 +471,53 @@ namespace HaiTang.Library.Api2018k
                 }
             });
         }
+
+        /// <summary>
+        /// 获取云变量数组
+        /// </summary>
+        /// <returns>string 返回云变量数组字符串</returns>
+        public async Task<string> GetCloudVarArray()
+        {
+            bool Success = await GetSoftCheck();
+            if (Success == false)
+            {
+                return _error;
+            }
+            return await ExecuteApiRequest(async (apiUrl) =>
+            {
+                using (HttpClient httpClient = new())
+                {
+                    // 构建API请求URL
+                    string requestUrl = $"{apiUrl}/v3/getCloudVariables?softwareId={Constants.SOFTWARE_ID}&isAPI=y";
+
+                    // 发送GET请求
+                    HttpResponseMessage response = await httpClient.GetAsync(requestUrl);
+                    // 确保请求成功
+                    response.EnsureSuccessStatusCode();
+
+                    // 读取响应内容
+                    string jsonString = await response.Content.ReadAsStringAsync();
+                    var _JsonData = JsonConvert.DeserializeObject<Json2018K>(jsonString);
+                    // 解密数据
+                    string JsonData = _JsonData?.data != null ? AesDecryptData(_JsonData.data, Constants.DEVELOPER_KEY) : string.Empty;
+
+                    // 解析JSON
+                    JArray jsonArray = JArray.Parse(JsonData);
+
+                    // 配置序列化设置以支持直接显示中文
+                    var settings = new JsonSerializerSettings
+                    {
+                        Formatting = Formatting.Indented,
+                        StringEscapeHandling = StringEscapeHandling.EscapeNonAscii, // 处理非ASCII字符
+                        DateTimeZoneHandling = DateTimeZoneHandling.Local
+                    };
+
+                    return JsonConvert.SerializeObject(jsonArray, settings);
+                }
+            });
+        }
+
+
 
         /// <summary>
         /// 修改云变量,如果变量不存在则新增

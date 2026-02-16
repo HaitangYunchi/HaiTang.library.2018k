@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <PackageId>$(AssemblyName)</PackageId>
     <Title>$(AssemblyName)</Title>
-    <Version>1.5.3-alpha.1</Version>
+    <Version>1.5.3-alpha.2</Version>
     <Authors>HaiTangYunchi</Authors>
     <Product>$(AssemblyName)</Product>
     <Description>提供与软件更新、用户管理、卡密验证、云变量操作等相关的 API 封装方法。
