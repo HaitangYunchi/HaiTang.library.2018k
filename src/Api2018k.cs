@@ -501,21 +501,35 @@ namespace HaiTang.Library.Api2018k
                     // 解密数据
                     string JsonData = _JsonData?.data != null ? AesDecryptData(_JsonData.data, Constants.DEVELOPER_KEY) : string.Empty;
 
-                    // 解析JSON
+                    // 解析JSON数组
                     JArray jsonArray = JArray.Parse(JsonData);
 
-                    // 配置序列化设置以支持直接显示中文
+                    // 创建新的JSON对象
+                    JObject result = new();
+
+                    // 遍历原始数组，直接添加键值对
+                    foreach (JObject item in jsonArray)
+                    {
+                        string key = item["key"]?.ToString() ?? string.Empty;
+                        string value = item["value"]?.ToString() ?? string.Empty;
+                        result[key] = value;
+                    }
+
+                    // 配置序列化设置以支持直接显示中文且不转义
                     var settings = new JsonSerializerSettings
                     {
                         Formatting = Formatting.Indented,
-                        StringEscapeHandling = StringEscapeHandling.EscapeNonAscii, // 处理非ASCII字符
-                        DateTimeZoneHandling = DateTimeZoneHandling.Local
+                        StringEscapeHandling = StringEscapeHandling.Default,
+                        ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
                     };
 
-                    return JsonConvert.SerializeObject(jsonArray, settings);
+                    // 返回转换后的JSON对象
+                    return JsonConvert.SerializeObject(result, settings);
                 }
             });
         }
+
+
 
 
 

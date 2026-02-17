@@ -39,7 +39,7 @@ namespace HaiTang.Library.Api2018k.SDK
         }
 
         /// <summary>
-        /// 登录接口（返回布尔值）
+        /// 登录接口（返回布尔值和信息）
         /// </summary>
         /// <param name="account">账号</param>
         /// <param name="password">密码</param>
@@ -50,8 +50,8 @@ namespace HaiTang.Library.Api2018k.SDK
             {
                 var request = new LoginRequest
                 {
-                    User = account,
-                    Password = password
+                    user = account,
+                    password = password
                 };
 
                 string jsonContent = JsonConvert.SerializeObject(request);
@@ -63,7 +63,7 @@ namespace HaiTang.Library.Api2018k.SDK
                 string responseContent = await response.Content.ReadAsStringAsync();
                 var result = JsonConvert.DeserializeObject<ApiResult<dynamic>>(responseContent);
 
-                Token = result?.Data?.token?.ToString() ?? string.Empty;
+                Token = result?.data?.token?.ToString() ?? string.Empty;
                 return (IsAuthenticated, Token);
             }
             catch (Exception ex)
@@ -90,15 +90,18 @@ namespace HaiTang.Library.Api2018k.SDK
             {
                 var request = new GetSoftwareListRequest
                 {
-                    Page = { Limit = (int)maxCount }
+                    page = new PageInfo
+                    {
+                        limit = (int)maxCount
+                    }
                 };
 
                 string jsonContent = JsonConvert.SerializeObject(request);
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
                 // 添加Token头
-                _httpClient.DefaultRequestHeaders.Remove("Token");
-                _httpClient.DefaultRequestHeaders.Add("Token", Token);
+                _httpClient.DefaultRequestHeaders.Remove("token");
+                _httpClient.DefaultRequestHeaders.Add("token", Token);
 
                 HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.BaseUrl}softwareList", content);
                 response.EnsureSuccessStatusCode();
@@ -107,9 +110,9 @@ namespace HaiTang.Library.Api2018k.SDK
                 var result = JsonConvert.DeserializeObject<ApiResult<dynamic>>(responseContent);
 
                 List<string> softwareIds = new List<string>();
-                if (result?.Data?.list != null)
+                if (result?.data?.list != null)
                 {
-                    foreach (var item in result.Data.list)
+                    foreach (var item in result.data.list)
                     {
                         softwareIds.Add(item.softwareId?.ToString() ?? string.Empty);
                     }
@@ -140,15 +143,18 @@ namespace HaiTang.Library.Api2018k.SDK
             {
                 var request = new GetSoftwareListRequest
                 {
-                    Page = { Limit = (int)maxCount }
+                    page = new PageInfo
+                    {
+                        limit = (int)maxCount
+                    }
                 };
 
                 string jsonContent = JsonConvert.SerializeObject(request);
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
                 // 添加Token头
-                _httpClient.DefaultRequestHeaders.Remove("Token");
-                _httpClient.DefaultRequestHeaders.Add("Token", Token);
+                _httpClient.DefaultRequestHeaders.Remove("token");
+                _httpClient.DefaultRequestHeaders.Add("token", Token);
 
                 HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.BaseUrl}softwareList", content);
                 response.EnsureSuccessStatusCode();
@@ -157,9 +163,9 @@ namespace HaiTang.Library.Api2018k.SDK
                 var result = JsonConvert.DeserializeObject<ApiResult<dynamic>>(responseContent);
 
                 SoftwareInfo softwareInfo = new SoftwareInfo();
-                if (result?.Data?.list != null)
+                if (result?.data?.list != null)
                 {
-                    foreach (var item in result.Data.list)
+                    foreach (var item in result.data.list)
                     {
                         if (item.softwareId?.ToString() == softwareId)
                         {
@@ -190,9 +196,10 @@ namespace HaiTang.Library.Api2018k.SDK
         /// 获取卡密列表
         /// </summary>
         /// <param name="maxCount">最大数量</param>
+        /// <param name="softwareId">实例ID，默认为空，表示获取所有软件的卡密</param>
         /// <returns>卡密信息列表</returns>
         /// <exception cref="Exception">请求异常</exception>
-        public async Task<List<CardInfo>> GetCardListAsync(long maxCount = 50)
+        public async Task<List<CardInfo>> GetCardListAsync( string softwareId = null, long maxCount = 50)
         {
             if (!IsAuthenticated)
             {
@@ -202,15 +209,19 @@ namespace HaiTang.Library.Api2018k.SDK
             {
                 var request = new GetCardListRequest
                 {
-                    Page = { Limit = (int)maxCount }
+                    page = new PageInfo
+                    {
+                        limit = (int)maxCount
+                    },
+                    softwareId = softwareId
                 };
 
                 string jsonContent = JsonConvert.SerializeObject(request);
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
                 // 添加Token头
-                _httpClient.DefaultRequestHeaders.Remove("Token");
-                _httpClient.DefaultRequestHeaders.Add("Token", Token);
+                _httpClient.DefaultRequestHeaders.Remove("token");
+                _httpClient.DefaultRequestHeaders.Add("token", Token);
 
                 HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.BaseUrl}authList", content);
                 response.EnsureSuccessStatusCode();
@@ -218,20 +229,39 @@ namespace HaiTang.Library.Api2018k.SDK
                 string responseContent = await response.Content.ReadAsStringAsync();
                 var result = JsonConvert.DeserializeObject<ApiResult<dynamic>>(responseContent);
 
-                List<CardInfo> cardList = new List<CardInfo>();
-                if (result?.Data?.list != null)
+                List<CardInfo> cardList = [];
+                if (result?.data?.list != null)
                 {
-                    foreach (var item in result.Data.list)
+                    foreach (var item in result.data.list)
                     {
-                        CardInfo card = new CardInfo
+                        if (softwareId == null || softwareId == string.Empty)
                         {
-                            CardNumber = item.authId?.ToString() ?? string.Empty,
-                            Remarks = item.remark?.ToString() ?? string.Empty,
-                            Duration = item.day?.ToString() ?? string.Empty,
-                            IsActivated = item.status ?? false,
-                            MachineCode = item.macid?.ToString() ?? string.Empty
-                        };
-                        cardList.Add(card);
+                            CardInfo card = new()
+                            {
+                                CardNumber = item.authId?.ToString() ?? string.Empty,
+                                Remarks = item.remark?.ToString() ?? string.Empty,
+                                Duration = item.day?.ToString() ?? string.Empty,
+                                IsActivated = item.status ?? false,
+                                MachineCode = item.macid?.ToString() ?? string.Empty,
+                                SoftwareId = item.softwareId?.ToString() ?? string.Empty
+
+                            };
+                            cardList.Add(card);
+                        }
+                        else if (item.softwareId?.ToString() == softwareId)
+                        {
+                            CardInfo card = new()
+                            {
+                                CardNumber = item.authId?.ToString() ?? string.Empty,
+                                Remarks = item.remark?.ToString() ?? string.Empty,
+                                Duration = item.day?.ToString() ?? string.Empty,
+                                IsActivated = item.status ?? false,
+                                MachineCode = item.macid?.ToString() ?? string.Empty,
+                                SoftwareId = item.softwareId?.ToString() ?? string.Empty
+                            };
+                            cardList.Add(card);
+                        }
+
                     }
                 }
 
@@ -242,6 +272,7 @@ namespace HaiTang.Library.Api2018k.SDK
                 throw new Exception("获取卡密列表失败：" + ex.Message, ex);
             }
         }
+
 
         /// <summary>
         /// 创建卡密
@@ -263,18 +294,18 @@ namespace HaiTang.Library.Api2018k.SDK
             {
                 var request = new CreateCardRequest
                 {
-                    SoftwareId = softwareId,
-                    Day = duration,
-                    CreateNumber = count,
-                    Remark = remarks
+                    softwareId = softwareId,
+                    day = duration,
+                    createNumber = count,
+                    remark = remarks
                 };
 
                 string jsonContent = JsonConvert.SerializeObject(request);
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
                 // 添加Token头
-                _httpClient.DefaultRequestHeaders.Remove("Token");
-                _httpClient.DefaultRequestHeaders.Add("Token", Token);
+                _httpClient.DefaultRequestHeaders.Remove("token");
+                _httpClient.DefaultRequestHeaders.Add("token", Token);
 
                 HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.BaseUrl}createAuth", content);
                 response.EnsureSuccessStatusCode();
@@ -283,15 +314,15 @@ namespace HaiTang.Library.Api2018k.SDK
                 var result = JsonConvert.DeserializeObject<ApiResult<dynamic>>(responseContent);
 
                 // 提取创建的卡密
-                if (result?.Data != null)
+                if (result?.data != null)
                 {
-                    foreach (var card in result.Data)
+                    foreach (var card in result.data)
                     {
                         createdCards.Add(card?.ToString() ?? string.Empty);
                     }
                 }
 
-                return (result?.Message == "请求成功", createdCards);
+                return (result?.message == "请求成功", createdCards);
             }
             catch (Exception ex)
             {
@@ -325,8 +356,8 @@ namespace HaiTang.Library.Api2018k.SDK
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
                 // 添加Token头
-                _httpClient.DefaultRequestHeaders.Remove("Token");
-                _httpClient.DefaultRequestHeaders.Add("Token", Token);
+                _httpClient.DefaultRequestHeaders.Remove("token");
+                _httpClient.DefaultRequestHeaders.Add("token", Token);
 
                 HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.BaseUrl}createSoftware", content);
                 response.EnsureSuccessStatusCode();
@@ -334,7 +365,7 @@ namespace HaiTang.Library.Api2018k.SDK
                 string responseContent = await response.Content.ReadAsStringAsync();
                 var result = JsonConvert.DeserializeObject<ApiResult<dynamic>>(responseContent);
 
-                return result?.Message == "请求成功";
+                return result?.message == "请求成功";
             }
             catch (Exception ex)
             {
@@ -445,6 +476,8 @@ namespace HaiTang.Library.Api2018k.SDK
         /// 时长（0为永久，单位：天）
         /// </summary>
         public string Duration { get; set; } = string.Empty;
+
+        public string SoftwareId { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -452,11 +485,11 @@ namespace HaiTang.Library.Api2018k.SDK
     /// </summary>
     internal class LoginRequest
     {
-        public object FingerId { get; set; } = string.Empty;
-        public string User { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public bool Agree { get; set; } = true;
+        public object fingerId { get; set; } = string.Empty;
+        public string user { get; set; } = string.Empty;
+        public string password { get; set; } = string.Empty;
+        public string email { get; set; } = string.Empty;
+        public bool agree { get; set; } = true;
     }
 
     /// <summary>
@@ -464,7 +497,7 @@ namespace HaiTang.Library.Api2018k.SDK
     /// </summary>
     internal class PageRequest
     {
-        public PageInfo Page { get; set; } = new PageInfo();
+        public PageInfo page { get; set; } = new PageInfo();
     }
 
     /// <summary>
@@ -472,9 +505,9 @@ namespace HaiTang.Library.Api2018k.SDK
     /// </summary>
     internal class PageInfo
     {
-        public int Limit { get; set; }
-        public int Count { get; set; } = 0;
-        public int PageNum { get; set; } = 1;
+        public int limit { get; set; }
+        public int count { get; set; } = 0;
+        public int pageNum { get; set; } = 1;
     }
 
     /// <summary>
@@ -482,8 +515,8 @@ namespace HaiTang.Library.Api2018k.SDK
     /// </summary>
     internal class GetSoftwareListRequest : PageRequest
     {
-        public string SoftwareName { get; set; } = string.Empty;
-        public string SoftwareId { get; set; } = string.Empty;
+        public string softwareName { get; set; } = string.Empty;
+        public string softwareId { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -491,12 +524,13 @@ namespace HaiTang.Library.Api2018k.SDK
     /// </summary>
     internal class GetCardListRequest : PageRequest
     {
-        public string PrivateKey { get; set; } = string.Empty;
-        public object Status { get; set; } = string.Empty;
-        public string Day { get; set; } = string.Empty;
-        public string AuthId { get; set; } = string.Empty;
-        public string Macid { get; set; } = string.Empty;
-        public string Remark { get; set; } = string.Empty;
+        public string privateKey { get; set; } = string.Empty;
+        public object status { get; set; } = string.Empty;
+        public string day { get; set; } = string.Empty;
+        public string authId { get; set; } = string.Empty;
+        public string macid { get; set; } = string.Empty;
+        public string remark { get; set; } = string.Empty;
+        public string softwareId { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -504,11 +538,11 @@ namespace HaiTang.Library.Api2018k.SDK
     /// </summary>
     internal class CreateCardRequest
     {
-        public string SoftwareId { get; set; } = string.Empty;
-        public int Day { get; set; }
-        public int CreateNumber { get; set; }
-        public string Remark { get; set; } = string.Empty;
-        public object BindCount { get; set; } = string.Empty;
+        public string softwareId { get; set; } = string.Empty;
+        public int day { get; set; }
+        public int createNumber { get; set; }
+        public string remark { get; set; } = string.Empty;
+        public object bindCount { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -526,9 +560,9 @@ namespace HaiTang.Library.Api2018k.SDK
     /// <typeparam name="T"></typeparam>
     internal class ApiResult<T>
     {
-        public int Code { get; set; }
-        public bool Success { get; set; }
-        public string Message { get; set; } = string.Empty;
-        public T Data { get; set; } = default!;
+        public int code { get; set; }
+        public bool success { get; set; }
+        public string message { get; set; } = string.Empty;
+        public T data { get; set; } = default!;
     }
 }
