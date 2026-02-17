@@ -199,7 +199,7 @@ namespace HaiTang.Library.Api2018k.SDK
         /// <param name="softwareId">实例ID，默认为空，表示获取所有软件的卡密</param>
         /// <returns>卡密信息列表</returns>
         /// <exception cref="Exception">请求异常</exception>
-        public async Task<List<CardInfo>> GetCardListAsync( string softwareId = null, long maxCount = 50)
+        public async Task<List<CardInfo>> GetCardListAsync( string? softwareId = null, long maxCount = 50)
         {
             if (!IsAuthenticated)
             {
@@ -213,7 +213,7 @@ namespace HaiTang.Library.Api2018k.SDK
                     {
                         limit = (int)maxCount
                     },
-                    softwareId = softwareId
+                    softwareId = softwareId ?? string.Empty // 保证不会为 null
                 };
 
                 string jsonContent = JsonConvert.SerializeObject(request);
@@ -477,6 +477,9 @@ namespace HaiTang.Library.Api2018k.SDK
         /// </summary>
         public string Duration { get; set; } = string.Empty;
 
+        /// <summary>
+        /// 获取或设置软件ID，用于标识和识别特定的软件实例。
+        /// </summary>
         public string SoftwareId { get; set; } = string.Empty;
     }
 

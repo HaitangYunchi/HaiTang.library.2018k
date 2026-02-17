@@ -247,7 +247,7 @@ namespace HaiTang.Library.Api2018k
         /// <summary>
         /// 获取软件全部信息
         /// </summary>
-        /// <returns>返回 Json 字符串</returns>
+        /// <returns>返回 Json </returns>
         public async Task<Mysoft> GetSoftAll()
         {
             // 获取Mysoft对象
@@ -422,54 +422,35 @@ namespace HaiTang.Library.Api2018k
             return softwareInfo?.softwareMd5 ?? _error;
         }
 
+ 
         /// <summary>
-        /// 获取云变量 （ 程序实例ID,OpenID,云端变量名称 ）
+        /// 获取云变量 （ 云端变量名称 ）
         /// </summary>
         /// <param name="VarName">云端变量名称</param>
         /// <returns>string 返回云变量的值</returns>
         public async Task<string> GetCloudVariables(string VarName)
         {
-            bool Success = await GetSoftCheck();
-            if (Success == false)
+            var (JsonData, Success) = await GetCloudVariablesData();
+            if (!Success)
             {
                 return _error;
             }
-            return await ExecuteApiRequest(async (apiUrl) =>
+
+            // 解析JSON数组
+            JArray jsonArray = JArray.Parse(JsonData);
+            List<KeyValuePair<string, string>> configList = [];
+
+            // 遍历JSON数据
+            foreach (JObject item in jsonArray)
             {
-                using (HttpClient httpClient = new())
-                {
-                    // 构建API请求URL
-                    string requestUrl = $"{apiUrl}/v3/getCloudVariables?softwareId={Constants.SOFTWARE_ID}&isAPI=y";
+                string CloudKey = item["key"]?.ToString() ?? string.Empty;
+                string CloudValue = item["value"]?.ToString() ?? string.Empty;
+                configList.Add(new KeyValuePair<string, string>(CloudKey, CloudValue));
+            }
 
-                    // 发送GET请求
-                    HttpResponseMessage response = await httpClient.GetAsync(requestUrl);
-                    // 确保请求成功
-                    response.EnsureSuccessStatusCode();
-
-                    // 读取响应内容
-                    string jsonString = await response.Content.ReadAsStringAsync();
-                    var _JsonData = JsonConvert.DeserializeObject<Json2018K>(jsonString);
-                    // 解密数据
-                    string JsonData = _JsonData?.data != null ? AesDecryptData(_JsonData.data, Constants.DEVELOPER_KEY) : string.Empty;
-
-                    // 解析JSON数组
-                    JArray jsonArray = JArray.Parse(JsonData);
-                    List<KeyValuePair<string, string>> configList = new List<KeyValuePair<string, string>>();
-
-                    // 遍历JSON数据
-                    foreach (JObject item in jsonArray)
-                    {
-                        string CloudKey = item["key"]?.ToString() ?? string.Empty;
-                        string CloudValue = item["value"]?.ToString() ?? string.Empty;
-                        configList.Add(new KeyValuePair<string, string>(CloudKey, CloudValue));
-                    }
-
-                    // 查找指定变量名
-                    var _Var = configList.FirstOrDefault(p => p.Key == VarName);
-                    string CloudVar = _Var.Value;
-                    return CloudVar;
-                }
-            });
+            // 查找指定变量名
+            var _Var = configList.FirstOrDefault(p => p.Key == VarName);
+            return _Var.Value;
         }
 
         /// <summary>
@@ -478,12 +459,50 @@ namespace HaiTang.Library.Api2018k
         /// <returns>string 返回云变量数组字符串</returns>
         public async Task<string> GetCloudVarArray()
         {
-            bool Success = await GetSoftCheck();
-            if (Success == false)
+            var (JsonData, Success) = await GetCloudVariablesData();
+            if (!Success)
             {
                 return _error;
             }
-            return await ExecuteApiRequest(async (apiUrl) =>
+
+            // 解析JSON数组
+            JArray jsonArray = JArray.Parse(JsonData);
+
+            // 创建新的JSON对象
+            JObject result = [];
+
+            // 遍历原始数组，直接添加键值对
+            foreach (JObject item in jsonArray)
+            {
+                string key = item["key"]?.ToString() ?? string.Empty;
+                string value = item["value"]?.ToString() ?? string.Empty;
+                result[key] = value;
+            }
+
+            // 配置序列化设置以支持直接显示中文且不转义
+            var settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                StringEscapeHandling = StringEscapeHandling.Default,
+                ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
+            };
+
+            // 返回转换后的JSON对象
+            return JsonConvert.SerializeObject(result, settings);
+        }
+
+        private async Task<(string JsonData, bool Success)> GetCloudVariablesData()
+        {
+            bool success = await GetSoftCheck();
+            if (!success)
+            {
+                return (string.Empty, false);
+            }
+
+            string jsonData = string.Empty;
+            bool result = false;
+
+            await ExecuteApiRequest(async (apiUrl) =>
             {
                 using (HttpClient httpClient = new())
                 {
@@ -499,36 +518,14 @@ namespace HaiTang.Library.Api2018k
                     string jsonString = await response.Content.ReadAsStringAsync();
                     var _JsonData = JsonConvert.DeserializeObject<Json2018K>(jsonString);
                     // 解密数据
-                    string JsonData = _JsonData?.data != null ? AesDecryptData(_JsonData.data, Constants.DEVELOPER_KEY) : string.Empty;
-
-                    // 解析JSON数组
-                    JArray jsonArray = JArray.Parse(JsonData);
-
-                    // 创建新的JSON对象
-                    JObject result = new();
-
-                    // 遍历原始数组，直接添加键值对
-                    foreach (JObject item in jsonArray)
-                    {
-                        string key = item["key"]?.ToString() ?? string.Empty;
-                        string value = item["value"]?.ToString() ?? string.Empty;
-                        result[key] = value;
-                    }
-
-                    // 配置序列化设置以支持直接显示中文且不转义
-                    var settings = new JsonSerializerSettings
-                    {
-                        Formatting = Formatting.Indented,
-                        StringEscapeHandling = StringEscapeHandling.Default,
-                        ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
-                    };
-
-                    // 返回转换后的JSON对象
-                    return JsonConvert.SerializeObject(result, settings);
+                    jsonData = _JsonData?.data != null ? AesDecryptData(_JsonData.data, Constants.DEVELOPER_KEY) : string.Empty;
+                    result = true;
                 }
+                return string.Empty; // 需要返回string以匹配委托签名，但实际不使用
             });
-        }
 
+            return (jsonData, result);
+        }
 
 
 
