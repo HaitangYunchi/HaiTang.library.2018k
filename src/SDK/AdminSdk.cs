@@ -488,7 +488,7 @@ namespace HaiTang.Library.Api2018k.SDK
     /// </summary>
     internal class LoginRequest
     {
-        public object fingerId { get; set; } = string.Empty;
+           public object fingerId { get; set; } = string.Empty;
         public string user { get; set; } = string.Empty;
         public string password { get; set; } = string.Empty;
         public string email { get; set; } = string.Empty;

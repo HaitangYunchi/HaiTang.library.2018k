@@ -375,11 +375,11 @@ namespace HaiTang.Library.Api2018k
         /// <summary>
         /// 获取授权有效期类型
         /// </summary>
-        /// <returns>string 返回卡密有效期类型, 卡密有效期天数</returns>
-        public async Task<string> GetNumberOfDays()
+        /// <returns>返回卡密有效期类型, 卡密有效期天数</returns>
+        public async Task<int> GetNumberOfDays()
         {
             var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
-            return softwareInfo?.numberOfDays.ToString() ?? _error;
+            return softwareInfo?.numberOfDays ?? 0;
         }
 
         /// <summary>
@@ -395,11 +395,11 @@ namespace HaiTang.Library.Api2018k
         /// <summary>
         /// 获取服务器时间 
         /// </summary>
-        /// <returns>string 返回服务器时间, 时间戳</returns>
-        public async Task<string> GetTimeStamp()
+        /// <returns>返回服务器时间, 时间戳</returns>
+        public async Task<long> GetTimeStamp()
         {
             var (_, softwareInfo) = await InitializationAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.LOCAL_MACHINE_CODE);
-            return softwareInfo?.timeStamp.ToString() ?? _error;
+            return softwareInfo?.timeStamp ?? 0;
         }
 
         /// <summary>
@@ -588,7 +588,7 @@ namespace HaiTang.Library.Api2018k
                     var _JsonData = JsonConvert.DeserializeObject<Json2018K>(responseContent);
                     return (_JsonData?.success ?? false) ? "true" : "false";
                 }) == "true";
-                return (_response, _response ? "授权成功" : "授权失败,请检查卡密是否正确或已被使用");
+                return (_response, _response ? "授权成功" : "授权失败,请检查授权码是否正确或已被使用");
             }
             catch
             {
@@ -776,7 +776,7 @@ namespace HaiTang.Library.Api2018k
                 string json = System.Text.Json.JsonSerializer.Serialize(requestData);
 
                 // 使用 HttpClient 发送 POST 请求
-                using (HttpClient client = new HttpClient())
+                using (HttpClient client = new())
                 {
                     // 设置请求头（Content-Type）
                     client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
@@ -936,10 +936,10 @@ namespace HaiTang.Library.Api2018k
         /// 获取账户剩余时长
         /// </summary>
         /// <returns>返回string类型</returns>
-        public async Task<string> GetUserBalance()
+        public async Task<int> GetUserBalance()
         {
             var userInfo = await InitializationUserAsync(Constants.SOFTWARE_ID, Constants.DEVELOPER_KEY, Constants.EMAIL, Constants.PASSWORD);
-            return userInfo.Balance.ToString() ?? _worring;
+            return userInfo?.Balance ?? 0;
         }
 
         /// <summary>
