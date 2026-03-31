@@ -2,7 +2,7 @@
 
 ## 概述
 
-HHaiTang.Library.Api2018k.Update 类提供了与 [2018k](http://2018k.cn) API 接口的完整封装，包括软件更新、用户管理、卡密验证、云变量操作等功能。本库支持多 API 地址故障转移、健康检测和加密通信。
+HHaiTang.Library.Api2018k.Update 类提供了与 [2018k](http://www.2018k.cn) API 接口的完整封装，包括软件更新、用户管理、卡密验证、云变量操作等功能。本库支持多 API 地址故障转移、健康检测和加密通信。
 
 ## 快速开始
 
@@ -194,7 +194,7 @@ bool success = await update.CustomerRegister("email", "password", "nickName", "a
 #### 获取全部用户信息
 
 ```c#
-string userInfoJson = await update.GetUserInfo();
+var userInfoJson = await update.GetUserInfo();
 // 返回格式化的JSON字符串
 ```
 
