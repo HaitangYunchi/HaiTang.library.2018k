@@ -39,11 +39,11 @@ namespace HaiTang.Library.Api2018k.SDK
         }
 
         /// <summary>
-        /// 登录接口（返回布尔值和信息）
+        /// 登录接口（返回布尔值和Token）
         /// </summary>
         /// <param name="account">账号</param>
         /// <param name="password">密码</param>
-        /// <returns>布尔值</returns>
+        /// <returns>返回布尔值和Token</returns>
         public async Task<(bool Success, string Message)> LoginAsync(string account, string password)
         {
             try
@@ -57,7 +57,7 @@ namespace HaiTang.Library.Api2018k.SDK
                 string jsonContent = JsonConvert.SerializeObject(request);
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.BaseUrl}login", content);
+                HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.AdminBaseUrl}login", content);
                 response.EnsureSuccessStatusCode();
 
                 string responseContent = await response.Content.ReadAsStringAsync();
@@ -103,7 +103,7 @@ namespace HaiTang.Library.Api2018k.SDK
                 _httpClient.DefaultRequestHeaders.Remove("token");
                 _httpClient.DefaultRequestHeaders.Add("token", Token);
 
-                HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.BaseUrl}softwareList", content);
+                HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.AdminBaseUrl}softwareList", content);
                 response.EnsureSuccessStatusCode();
 
                 string responseContent = await response.Content.ReadAsStringAsync();
@@ -156,13 +156,13 @@ namespace HaiTang.Library.Api2018k.SDK
                 _httpClient.DefaultRequestHeaders.Remove("token");
                 _httpClient.DefaultRequestHeaders.Add("token", Token);
 
-                HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.BaseUrl}softwareList", content);
+                HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.AdminBaseUrl}softwareList", content);
                 response.EnsureSuccessStatusCode();
 
                 string responseContent = await response.Content.ReadAsStringAsync();
                 var result = JsonConvert.DeserializeObject<ApiResult<dynamic>>(responseContent);
 
-                SoftwareInfo softwareInfo = new SoftwareInfo();
+                SoftwareInfo softwareInfo = new();
                 if (result?.data?.list != null)
                 {
                     foreach (var item in result.data.list)
@@ -223,7 +223,7 @@ namespace HaiTang.Library.Api2018k.SDK
                 _httpClient.DefaultRequestHeaders.Remove("token");
                 _httpClient.DefaultRequestHeaders.Add("token", Token);
 
-                HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.BaseUrl}authList", content);
+                HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.AdminBaseUrl}authList", content);
                 response.EnsureSuccessStatusCode();
 
                 string responseContent = await response.Content.ReadAsStringAsync();
@@ -307,7 +307,7 @@ namespace HaiTang.Library.Api2018k.SDK
                 _httpClient.DefaultRequestHeaders.Remove("token");
                 _httpClient.DefaultRequestHeaders.Add("token", Token);
 
-                HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.BaseUrl}createAuth", content);
+                HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.AdminBaseUrl}createAuth", content);
                 response.EnsureSuccessStatusCode();
 
                 string responseContent = await response.Content.ReadAsStringAsync();
@@ -359,7 +359,7 @@ namespace HaiTang.Library.Api2018k.SDK
                 _httpClient.DefaultRequestHeaders.Remove("token");
                 _httpClient.DefaultRequestHeaders.Add("token", Token);
 
-                HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.BaseUrl}createSoftware", content);
+                HttpResponseMessage response = await _httpClient.PostAsync($"{Constants.AdminBaseUrl}createSoftware", content);
                 response.EnsureSuccessStatusCode();
 
                 string responseContent = await response.Content.ReadAsStringAsync();

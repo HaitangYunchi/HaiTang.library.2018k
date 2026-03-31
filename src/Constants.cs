@@ -89,6 +89,6 @@ namespace HaiTang.Library.Api2018k
         /// <summary>
         /// SDK 后台 API 基础 URL 地址，用于所有 API 请求的根路径
         /// </summary>
-        public const string BaseUrl = "https://admin.2018k.cn/api/adm/";
+        public const string AdminBaseUrl = "https://admin.2018k.cn/api/adm/";
     }
 }
