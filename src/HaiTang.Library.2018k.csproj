@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <PackageId>$(AssemblyName)</PackageId>
     <Title>$(AssemblyName)</Title>
-    <Version>1.5.3-alpha.7</Version>
+    <Version>1.5.4-alpha.1</Version>
     <Authors>HaiTangYunchi</Authors>
     <Product>$(AssemblyName)</Product>
     <Description>提供与软件更新、用户管理、卡密验证、云变量操作等相关的 API 封装方法。
@@ -22,9 +22,25 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <PackageProjectUrl>https://www.nuget.org/packages/HaiTang.library.2018k</PackageProjectUrl>
-    <PackageReleaseNotes>优化了初始化的返回参数，返回bool，Mysoft
-优化了检测实例是否可用的方法传参
-优化了检测实例可以直接调用初始化方法</PackageReleaseNotes>
+    <PackageReleaseNotes>更新日志 (v2.0)
+
+🔒 安全增强
+软件ID与开发者密钥改用 SecureString 存储，内存中不再留存明文
+移除硬编码盐值，改为从安全配置动态获取
+敏感数据仅在加解密时临时解密，用完立即擦除
+
+⚡ 性能优化
+HttpClient 改为全局单例，避免端口耗尽与资源泄漏
+
+🛡️ 代码健壮性
+Update 类标记为 sealed，防止派生类破坏安全模型
+实现 IDisposable 接口，规范资源释放
+
+📦 其他
+增加 SecureString 重载的 SetSoftwareId / SetDeveloperKey 方法
+旧版字符串参数方法标记为 [Obsolete]
+
+升级建议：请使用新的 SecureString 方式传递敏感信息，避免在托管堆中留下明文。</PackageReleaseNotes>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

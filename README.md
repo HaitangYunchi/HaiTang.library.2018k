@@ -1,8 +1,28 @@
-# HaiTang.Library.Api2018k.Update API 调用手册
+# HaiTangYunchi.library.2018k API 调用手册
 
 ## 概述
 
-HHaiTang.Library.Api2018k.Update 类提供了与 [2018k](http://www.2018k.cn) API 接口的完整封装，包括软件更新、用户管理、卡密验证、云变量操作等功能。本库支持多 API 地址故障转移、健康检测和加密通信。
+HaiTang.library.2018k.Update 类提供了与 [2018k](http://www.2018k.cn) API 接口的完整封装，包括软件更新、用户管理、卡密验证、云变量操作等功能。本库支持多 API 地址故障转移、健康检测和加密通信。
+
+更新安全模式
+
+软件ID和开发者密钥**始终以 `SecureString` 形式存储**，仅在 DLL 内部转换过程中产生一个短暂的 `char[]`（生命周期极短，且在使用后立即清空）。
+
+**没有任何托管字符串**（如 `System.String`）长期驻留内存，因此常规内存抓取工具（Cheat Engine、DNSpy）无法捕获明文。
+
+软件ID和开发者KEY可以通过 **SecureString**  进行安全加密存储。    
+
+```c#
+using HaiTang.Library.Api2018k;
+var secureId = Tools.CreateSecureString("软件ID");	// 每个字符存储在非托管内存中
+Tools.SetSoftwareId(secureId);
+// 内部通过 Marshal.SecureStringToGlobalAllocUnicode 获取非托管指针，复制到 char[] 缓冲区
+var secureKey = Tools.CreateSecureString("开发者密钥");
+Tools.SetDeveloperKey(secureKey);
+```
+
+​          
+​                
 
 ## 快速开始
 
@@ -13,16 +33,27 @@ HHaiTang.Library.Api2018k.Update 类提供了与 [2018k](http://www.2018k.cn) AP
 ```c#
 using HaiTang.Library.Api2018k;
 Update update = new();  // 实例化更新对象
-var (success，softwareInfo) = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");
+var (isValid,softwareInfo) = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");
+// 如果设置了软件ID和开发者密钥的 SecureString 处理的话，可以直接使用 await update.InitializationAsync();
+// 保留传参是要兼容旧接口。
 ```
 
-- **返回值**: `bool,MySoft` - 实例是否有效，软件信息对象Json
+- **参数**:
+  - `ID`: 程序实例ID
+  - `key`: 开发者密钥
+  - `Code`: 机器码（可选，为空时自动获取）
+- **返回值**: `(success.Mysoft)` - bool实例状态，Mysoft软件信息
 
 #### **用户初始化**
 
 ```c#
-var userInfo = await update.InitializationUserAsync("软件ID", "开发者密钥", "邮箱", "密码");
+var userInfo = await update.InitializationUserAsync( "邮箱", "密码","软件ID", "开发者密钥");
 ```
+
+- email：邮箱
+- password：密码
+- `ID`: 程序实例ID
+- `key`: 开发者密钥
 
 ## 软件实例方法
 
@@ -32,11 +63,12 @@ var userInfo = await update.InitializationUserAsync("软件ID", "开发者密钥
 bool isValid = await update.GetSoftCheck();
 ```
 
-- **返回值**: `bool` - 实例是否有效，方法已经合并到 InitializationAsync 中
+- **返回值**: `bool` - 实例是否有效，已经合并到**InitializationAsyncvar();** 
+- `var (isValid,softwareInfo) = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");`
 
 ### 2. 获取软件信息
 
-#### 初始化后直接调用
+#### 初始化后直接调用（没有缓存）
 
 ```c#
 using HaiTang.Library.Api2018k;
@@ -44,25 +76,25 @@ Update update = new();  // 实例化更新对象
 var softwareInfo = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");
 
 string softwareId = softwareInfo.softwareId;        	// 实例ID
-string version = softwareInfo.versionNumber;       		// 版本号
+string version = softwareInfo.versionNumber;       	// 版本号
 string name = softwareInfo.softwareName;            	// 软件名称
 string updateInfo = softwareInfo.versionInformation; 	// 更新内容
 string notice = softwareInfo.notice;                	// 公告
 string downloadLink = softwareInfo.downloadLink;    	// 下载链接
-int visits = softwareInfo.numberOfVisits;        		// 访问量
+int visits = softwareInfo.numberOfVisits;        	// 访问量
 bool isItEffective = softwareInfo.isItEffective ;       // 是否激活
-long expirationDate = softwareInfo.expirationDate;		// 过期时间戳(毫秒)
+long expirationDate = softwareInfo.expirationDate;	// 过期时间戳(毫秒)
 ```
 
-#### 方法获取特定信息
+#### 方法获取特定信息（带有缓存的获取信息）
 
 ```c#
-var allInfo = await update.GetSoftAll();					// 返回格式化的JSON对象
+var allInfo = await update.GetSoftAll();			// 返回格式化的JSON
 string softwareId = await update.GetSoftwareID();        	// 实例ID
 string version = await update.GetVersionNumber();       	// 版本号
 string name = await update.GetSoftwareName();            	// 软件名称
-string updateInfo = await update.GetVersionInformation();	// 更新内容
-string notice = await update.GetNotice();					// 公告
+string updateInfo = await update.GetVersionInformation();       // 更新内容
+string notice = await update.GetNotice();                       // 公告
 string downloadLink = await update.GetDownloadLink();    	// 下载链接
 string visits = await update.GetNumberOfVisits();        	// 访问量
 string minVersion = await update.GetMiniVersion();       	// 最低版本
@@ -222,12 +254,12 @@ string result = await update.Recharge("卡密ID");
 ### 1.常用方法
 
 ```c#
-Tools.GetMachineCodeEx();  							// 获取机器码
+Tools.GetMachineCodeEx();  				// 获取机器码
 Tools.GenerateRandomString(int length,int type);	// 生成随机字符
-Tools.GenerateSalt(int length = 64);  				// 生成随机盐值，默认为64字节
-Tools.Sha256(string input);							// 生成SHA256哈希值
-Tools.Sha512(string input);							// 生成SHA512哈希值
-Tools.upgrade(string downloadLink);		        	// 启动更新程序
+Tools.GenerateSalt(int length = 64);  			// 生成随机盐值，默认为64字节
+Tools.Sha256(string input);				// 生成SHA256哈希值
+Tools.Sha512(string input);				// 生成SHA512哈希值
+Tools.upgrade(string downloadLink);		        // 启动更新程序
 ```
 
 ### 2.程序更新
@@ -239,7 +271,7 @@ Tools.upgrade(string downloadLink);	// 启动更新程序
 ### 3.AES加密 自动IV
 
 ```c#
-Tools.Encrypt(string plainText,string key);		// AES加密
+Tools.Encrypt(string plainText,string key);	// AES加密
 Tools.Decrypt(string cipherText, string key);	// AES解密
 ```
 
