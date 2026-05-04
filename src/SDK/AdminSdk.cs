@@ -35,7 +35,7 @@ namespace HaiTang.Library.Api2018k.SDK
             {
                 Timeout = TimeSpan.FromSeconds(30)
             };
-            _token = string.Empty;  // 初始化 _token
+            _token = string.Empty;  // 初始化 _token 为空字符串
         }
 
         /// <summary>
@@ -64,12 +64,12 @@ namespace HaiTang.Library.Api2018k.SDK
                 var result = JsonConvert.DeserializeObject<ApiResult<dynamic>>(responseContent);
 
                 Token = result?.data?.token?.ToString() ?? string.Empty;
-                return (IsAuthenticated, Token);
+                return (IsAuthenticated, Token);// 返回布尔值和Token
             }
             catch (Exception ex)
             {
                 Token = string.Empty;
-                return (false, $"登录失败: {ex.Message}");
+                return (false, $"登录失败: {ex.Message}");// 返回布尔值和Token
             }
         }
 
