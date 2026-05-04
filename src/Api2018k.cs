@@ -204,6 +204,7 @@ namespace HaiTang.Library.Api2018k
         public async Task<(bool Success, Mysoft? config)> InitializationAsync(string ID = null, string key = null, string? Code = null)
         {
             // 如果参数非空，则通过安全方式设置 Constants（仅当未通过 SecureString 设置时）
+            // 如果参数为空，则自动则使用 Constants 中的值，并获取机器码并设置到 Constants
             if (!string.IsNullOrEmpty(ID))
             {
                 var secureId = Tools.CreateSecureString(ID);
