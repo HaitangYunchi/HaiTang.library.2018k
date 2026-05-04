@@ -69,7 +69,7 @@ namespace HaiTang.Library.Api2018k.SDK
             catch (Exception ex)
             {
                 Token = string.Empty;
-                return (false, $"登录失败: {ex.Message}");// 返回布尔值和Token
+                return (false, $"登录失败: {ex.Message}");// 返回失败状态和错误信息
             }
         }
 
