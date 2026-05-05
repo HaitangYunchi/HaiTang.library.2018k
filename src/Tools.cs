@@ -379,6 +379,108 @@ namespace HaiTang.Library.Api2018k
             return Sha256(seed);
         }
 
+        // +++ 新增 RSA2 密钥对生成相关方法 +++
+        /// <summary>
+        /// RSA2 密钥对信息
+        /// </summary>
+        public class Rsa2KeyPair
+        {
+            /// <summary>公钥 (PEM 格式)</summary>
+            public string PublicKeyPem { get; internal set; }
+
+            /// <summary>私钥 (PEM 格式)</summary>
+            public string PrivateKeyPem { get; internal set; }
+
+            /// <summary>公钥 (XML 格式)</summary>
+            public string PublicKeyXml { get; internal set; }
+
+            /// <summary>私钥 (XML 格式)</summary>
+            public string PrivateKeyXml { get; internal set; }
+
+            /// <summary>密钥长度 (位)</summary>
+            public int KeySize { get; internal set; }
+
+            /// <summary>生成时间 (UTC)</summary>
+            public DateTime GeneratedAt { get; internal set; } = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// 生成 RSA2 密钥对（同时返回 PEM 和 XML 格式）
+        /// </summary>
+        /// <param name="keySize">密钥长度，推荐 2048，范围 512~16384</param>
+        /// <returns>包含公私钥信息的 Rsa2KeyPair 对象</returns>
+        /// <exception cref="ArgumentException">密钥长度无效时抛出</exception>
+        public static Rsa2KeyPair GenerateRsa2KeyPair(int keySize = 2048)
+        {
+            if (keySize < 512 || keySize > 16384)
+                throw new ArgumentException("密钥长度必须在512~16384之间", nameof(keySize));
+
+            using var rsa = RSA.Create(keySize);
+            var pair = new Rsa2KeyPair
+            {
+                KeySize = keySize,
+                PublicKeyPem = rsa.ExportRSAPublicKeyPem(),
+                PrivateKeyPem = rsa.ExportRSAPrivateKeyPem(),
+                PublicKeyXml = rsa.ToXmlString(false),
+                PrivateKeyXml = rsa.ToXmlString(true)
+            };
+            return pair;
+        }
+
+        /// <summary>
+        /// 生成 RSA2 密钥对，仅返回 PEM 格式的字符串元组
+        /// </summary>
+        /// <param name="privateKeyPem">私钥 PEM</param>
+        /// <param name="publicKeyPem">公钥 PEM</param>
+        /// <param name="keySize">密钥长度</param>
+        public static void GenerateRsa2PemKeys(out string privateKeyPem, out string publicKeyPem, int keySize = 2048)
+        {
+            var pair = GenerateRsa2KeyPair(keySize);
+            privateKeyPem = pair.PrivateKeyPem;
+            publicKeyPem = pair.PublicKeyPem;
+        }
+
+        /// <summary>
+        /// 生成 RSA2 密钥对，仅返回 XML 格式的字符串元组
+        /// </summary>
+        /// <param name="privateKeyXml">私钥 XML</param>
+        /// <param name="publicKeyXml">公钥 XML</param>
+        /// <param name="keySize">密钥长度</param>
+        public static void GenerateRsa2XmlKeys(out string privateKeyXml, out string publicKeyXml, int keySize = 2048)
+        {
+            var pair = GenerateRsa2KeyPair(keySize);
+            privateKeyXml = pair.PrivateKeyXml;
+            publicKeyXml = pair.PublicKeyXml;
+        }
+
+        /// <summary>
+        /// 保存 RSA2 密钥对到文件（PEM 格式）
+        /// </summary>
+        /// <param name="privateKeyFilePath">私钥文件路径</param>
+        /// <param name="publicKeyFilePath">公钥文件路径</param>
+        /// <param name="keySize">密钥长度</param>
+        public static void SaveRsa2PemToFile(string privateKeyFilePath, string publicKeyFilePath, int keySize = 2048)
+        {
+            var pair = GenerateRsa2KeyPair(keySize);
+            File.WriteAllText(privateKeyFilePath, pair.PrivateKeyPem, Encoding.UTF8);
+            File.WriteAllText(publicKeyFilePath, pair.PublicKeyPem, Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 保存 RSA2 密钥对到文件（XML 格式）
+        /// </summary>
+        /// <param name="privateKeyFilePath">私钥文件路径</param>
+        /// <param name="publicKeyFilePath">公钥文件路径</param>
+        /// <param name="keySize">密钥长度</param>
+        public static void SaveRsa2XmlToFile(string privateKeyFilePath, string publicKeyFilePath, int keySize = 2048)
+        {
+            var pair = GenerateRsa2KeyPair(keySize);
+            File.WriteAllText(privateKeyFilePath, pair.PrivateKeyXml, Encoding.UTF8);
+            File.WriteAllText(publicKeyFilePath, pair.PublicKeyXml, Encoding.UTF8);
+        }
+
+        // +++ 结束 +++
+
         #region 设置方法（安全重载）
 
         /// <summary>
