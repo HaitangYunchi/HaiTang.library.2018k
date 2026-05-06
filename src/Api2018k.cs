@@ -201,7 +201,7 @@ namespace HaiTang.Library.Api2018k
         /// <param name="key">开发者密钥，可选参数。如果提供，将通过安全方式设置到Constants中</param>
         /// <param name="Code">机器码，可选参数。如果不提供，将自动获取</param>
         /// <returns>返回一个元组，包含是否成功和软件配置信息</returns>
-        public async Task<(bool Success, Mysoft? config)> InitializationAsync(string ID = null, string key = null, string? Code = null)
+        public async Task<(bool Success, Mysoft? config)> InitializationAsync(string? ID = null, string? key = null, string? Code = null)
         {
             // 如果参数非空，则通过安全方式设置 Constants（仅当未通过 SecureString 设置时）
             // 如果参数为空，则自动则使用 Constants 中的值，并获取机器码并设置到 Constants
@@ -265,7 +265,7 @@ namespace HaiTang.Library.Api2018k
             return info?.softwareId ?? _error;
         }
 
-        // <summary>
+        /// <summary>
         /// 获取软件版本号
         /// </summary>
         /// <returns>返回版本号字符串</returns>
@@ -437,7 +437,7 @@ namespace HaiTang.Library.Api2018k
         }
 
         /// <summary>
-        /// 获取所有云变量
+        /// 获取实例下所有云变量
         /// </summary>
         /// <returns>返回JSON格式的云变量数据</returns>
         public async Task<string> GetCloudVarArray()
@@ -463,7 +463,7 @@ namespace HaiTang.Library.Api2018k
 
         private async Task<(string JsonData, bool Success)> GetCloudVariablesData()
         {
-            bool success = await GetSoftCheck();
+            var (success, _) = await InitializationAsync();
             if (!success) return (string.Empty, false);
             string jsonData = string.Empty;
             bool result = false;
@@ -655,8 +655,8 @@ namespace HaiTang.Library.Api2018k
         /// <returns>返回网络验证码字符串</returns>
         public async Task<string> GetNetworkCode()
         {
-            bool Success = await GetSoftCheck();
-            if (!Success) return _error;
+            var (success, _) = await InitializationAsync();
+            if (!success) return _error;
             return await ExecuteApiRequest(async (apiUrl) =>
             {
                 string softwareId = Tools.ExecuteWithSoftwareId(id => id);
@@ -716,7 +716,7 @@ namespace HaiTang.Library.Api2018k
         /// <param name="email">用户邮箱</param>
         /// <param name="password">用户密码</param>
         /// <returns>返回用户信息对象</returns>
-        public async Task<UserInfo> InitializationUserAsync(string email, string password,string ID = null, string key = null)
+        public async Task<UserInfo> InitializationUserAsync(string email, string password,string? ID = null, string? key = null)
         {
             if (!string.IsNullOrEmpty(ID))
             {
