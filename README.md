@@ -131,7 +131,7 @@ var (success, message) = await update.ActivationKey("卡密ID");
 #### 创建卡密
 
 ```c#
-string result = await update.CreateNetworkAuthentication(30, "测试卡密","程序实例ID");
+string result = await update.CreateNetworkAuthentication(30, "测试卡密","程序实例ID","换绑次数");
 // 返回JSON格式的卡密信息
 ```
 
@@ -139,6 +139,7 @@ string result = await update.CreateNetworkAuthentication(30, "测试卡密","程
   - `day`: 有效期天数
   - `remark`: 卡密备注
   - `ID`: 程序实例ID
+  - `bindCount`: 换绑次数（可选）
 
 #### 解绑/换绑
 

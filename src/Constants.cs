@@ -51,7 +51,26 @@ namespace HaiTang.Library.Api2018k
 
         /// <summary>检查状态标志，用于控制某些功能的启用或禁用</summary>
         public static bool CHECK = false;
+        /// <summary>
+        /// 开发模式标志
+        /// <para>当此值为 true 时，系统将使用开发环境的配置</para>
+        /// <para>包括使用本地 API 地址、启用调试功能等</para>
+        /// </summary>
+        /// <remarks>
+        /// 在开发过程中，可以将此值设置为 true 以使用开发环境配置
+        /// 在生产环境中，应确保此值为 false
+        /// </remarks>
+        public static bool DEVELOPMENT_MODE = false;
 
+        /// <summary>
+        /// 开发环境的 API 服务器地址
+        /// </summary>
+        /// <remarks>
+        /// 此地址指向本地开发服务器
+        /// 仅当 DEVELOPMENT_MODE 为 true 时有效
+        /// 生产环境应使用正式的 API 地址
+        /// </remarks>
+        public static string DEVELOPMENT_API_URL = "http://127.0.0.1:3000";
         /// <summary>API服务器地址列表，用于实现多地址故障转移和负载均衡</summary>
         public static readonly string[] ApiAddressList =
         {
@@ -63,7 +82,12 @@ namespace HaiTang.Library.Api2018k
         };
 
         /// <summary>SDK 后台 API 基础 URL 地址</summary>
-        public const string AdminBaseUrl = "https://admin.2018k.cn/api/adm/";
+        public static string AdminBaseUrl => DEVELOPMENT_MODE ? $"{DEVELOPMENT_API_URL}/api/adm/" : "https://admin.2018k.cn/api/adm/";
+
+        /// <summary>
+        /// 获取当前使用的 API 地址（根据开发模式动态返回）
+        /// </summary>
+        public static string CurrentApiUrl => DEVELOPMENT_MODE ? DEVELOPMENT_API_URL : ApiAddressList[0];
 
         #endregion
 

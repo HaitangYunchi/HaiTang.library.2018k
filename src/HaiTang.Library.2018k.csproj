@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <PackageId>$(AssemblyName)</PackageId>
     <Title>$(AssemblyName)</Title>
-    <Version>1.5.4-alpha.1</Version>
+    <Version>1.5.6-alpha.1</Version>
     <Authors>HaiTangYunchi</Authors>
     <Product>$(AssemblyName)</Product>
     <Description>提供与软件更新、用户管理、卡密验证、云变量操作等相关的 API 封装方法。
@@ -18,11 +18,13 @@
     <SymbolPackageFormat>symbols.nupkg</SymbolPackageFormat>
     <RepositoryUrl>https://github.com/HaitangYunchi/HaiTang.library.2018k.git</RepositoryUrl>
     <PackageTags>HaiTangYunchi;HaiTang.library;HaiTang.library.2018k;Update;haitang;yunchi;haitangyunchi;update;upgrade</PackageTags>
-    <Copyright>Copyright © 2025 HaiTangYunchi. All rights reserved.</Copyright>
+    <Copyright>Copyright © 2026 HaiTangYunchi. All rights reserved.</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <PackageProjectUrl>https://www.nuget.org/packages/HaiTang.library.2018k</PackageProjectUrl>
-    <PackageReleaseNotes>更新日志 (v2.0)
+    <PackageReleaseNotes>更新日志 (v2.1)
+
+📦 扩展了在创建卡密时可以传参绑定次数
 
 🔒 安全增强
 软件ID与开发者密钥改用 SecureString 存储，内存中不再留存明文

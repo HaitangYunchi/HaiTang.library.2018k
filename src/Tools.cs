@@ -28,6 +28,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 namespace HaiTang.Library.Api2018k
 {
@@ -187,7 +188,119 @@ namespace HaiTang.Library.Api2018k
                 return Convert.ToHexString(hashBytes);
             }
         }
+        /// <summary>
+        /// 加密 JSON 对象（与服务端 T.codeTools.encrypt 对应）
+        /// </summary>
+        /// <typeparam name="T">数据类型</typeparam>
+        /// <param name="data">要加密的对象</param>
+        /// <param name="openId">用户的 openId（作为密钥来源）</param>
+        /// <param name="isApi">是否 API 调用模式</param>
+        /// <returns>加密后的 Base64 字符串</returns>
+        public static string EncryptJson<T>(T data, string openId)
+        {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+            if (string.IsNullOrWhiteSpace(openId))
+                throw new ArgumentNullException(nameof(openId));
 
+            // 将对象序列化为 JSON 字符串
+            string jsonString = JsonSerializer.Serialize(data);
+
+            // 使用 SHA256 从 openId 派生 32 字节密钥
+            byte[] key = DeriveKey(openId);
+
+            // 生成随机 IV（16 字节）
+            byte[] iv = GenerateIV();
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = key;
+                aes.IV = iv;
+                aes.Mode = CipherMode.CBC;
+                aes.Padding = PaddingMode.PKCS7;
+
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+                byte[] plainBytes = Encoding.UTF8.GetBytes(jsonString);
+                byte[] encryptedBytes = encryptor.TransformFinalBlock(plainBytes, 0, plainBytes.Length);
+
+                // 组合 IV 和密文：IV(16) + 密文
+                byte[] combined = new byte[iv.Length + encryptedBytes.Length];
+                Buffer.BlockCopy(iv, 0, combined, 0, iv.Length);
+                Buffer.BlockCopy(encryptedBytes, 0, combined, iv.Length, encryptedBytes.Length);
+
+                // 返回 Base64 编码结果
+                return Convert.ToBase64String(combined);
+            }
+        }
+
+        /// <summary>
+        /// 解密 JSON 字符串（与服务端 T.codeTools.decrypt 对应）
+        /// </summary>
+        /// <typeparam name="T">目标类型</typeparam>
+        /// <param name="encryptedText">加密的 Base64 字符串</param>
+        /// <param name="openId">用户的 openId</param>
+        /// <param name="isApi">是否 API 调用模式</param>
+        /// <returns>解密后的对象</returns>
+        public static T DecryptJson<T>(string encryptedText, string openId)
+        {
+            if (string.IsNullOrWhiteSpace(encryptedText))
+                throw new ArgumentNullException(nameof(encryptedText));
+            if (string.IsNullOrWhiteSpace(openId))
+                throw new ArgumentNullException(nameof(openId));
+
+            byte[] key = DeriveKey(openId);
+
+            // 处理 URL 编码的空格
+            encryptedText = encryptedText.Replace(" ", "+");
+            byte[] combined = Convert.FromBase64String(encryptedText);
+
+            // 分离 IV 和密文
+            byte[] iv = new byte[16];
+            byte[] encryptedBytes = new byte[combined.Length - iv.Length];
+            Buffer.BlockCopy(combined, 0, iv, 0, iv.Length);
+            Buffer.BlockCopy(combined, iv.Length, encryptedBytes, 0, encryptedBytes.Length);
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = key;
+                aes.IV = iv;
+                aes.Mode = CipherMode.CBC;
+                aes.Padding = PaddingMode.PKCS7;
+
+                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+                byte[] plainBytes = decryptor.TransformFinalBlock(encryptedBytes, 0, encryptedBytes.Length);
+
+                string jsonString = Encoding.UTF8.GetString(plainBytes);
+                return JsonSerializer.Deserialize<T>(jsonString);
+            }
+        }
+
+        /// <summary>
+        /// 从 openId 派生 AES 密钥
+        /// </summary>
+        private static byte[] DeriveKey(string openId)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+
+                string keySource =openId;
+                return sha256.ComputeHash(Encoding.UTF8.GetBytes(keySource));
+            }
+        }
+
+        /// <summary>
+        /// 生成随机初始化向量
+        /// </summary>
+        private static byte[] GenerateIV()
+        {
+            byte[] iv = new byte[16];
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(iv);
+            }
+            return iv;
+        }
         /// <summary>
         /// AES加密（简单模式，IV随机）
         /// </summary>
