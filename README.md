@@ -21,8 +21,13 @@ var secureKey = Tools.CreateSecureString("开发者密钥");
 Tools.SetDeveloperKey(secureKey);
 ```
 
-​          
-​                
+- **开发者模式**:
+
+  - 当开发者调用  `Constants.DEVELOPMENT_MODE=true`  时，即进入  **开发者模式** ，默认 `false` 状态
+  - 在  **开发者模式**  下，所有的调试地址，都将从  ` Constants.DEVELOPMENT_API_URL[]`   获取,此模式仅供  **API Server服务端开发调试**  用
+  - 默认开发者  `ApiUrl` 为  `127.0.0.1:3000`
+
+  ​                 
 
 ## 快速开始
 
@@ -64,7 +69,7 @@ bool isValid = await update.GetSoftCheck();
 ```
 
 - **返回值**: `bool` - 实例是否有效，已经合并到**InitializationAsyncvar();** 
-- `var (isValid,softwareInfo) = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");`
+- `var (isValid,_) = await update.InitializationAsync("软件ID", "开发者密钥", "可选机器码");`
 
 ### 2. 获取软件信息
 
@@ -283,13 +288,128 @@ Tools.Encrypt(string plainText, string password, string salt);	// AES加密
 Tools.Decrypt(string cipherText, string password, string salt);	// AES解密
 ```
 
+### 5.服务端AES加解密
+
+```c#
+Tools.ServerEncrypt(object data, string key);	// 2018k服务端AES加密
+Tools.ServerDecrypt(string encryptedData, string key);	// 2018k服务端AES解密
+```
+
+- **参数**:
+  - `data`: json对象
+  - `key`: 开发者OpenId
+  - `encryptedData`: 服务端传回加密字符串
+
+- **返回值**: `string` 字符串格式
+
+### 5.生成 RSA2 密钥对（同时返回 PEM 和 XML 格式）
+
+```c#
+Tools.GenerateRsa2KeyPair(int keySize = 2048);	// 默认长度2048
+```
+
+- **参数**:
+  - `keySize`: 密钥长度（密钥长度必须在512~16384之间）
+
+```c#
+try
+{
+    // 生成默认长度（2048位）的RSA2密钥对
+    Rsa2KeyPair keyPair = Tools.GenerateRsa2KeyPair();
+    
+    // 使用生成的密钥对
+    Console.WriteLine("公钥（PEM格式）：");
+    Console.WriteLine(keyPair.PublicKeyPem);
+    
+    Console.WriteLine("\n私钥（PEM格式）：");
+    Console.WriteLine(keyPair.PrivateKeyPem);
+    
+    Console.WriteLine("\n公钥（XML格式）：");
+    Console.WriteLine(keyPair.PublicKeyXml);
+    
+    Console.WriteLine("\n私钥（XML格式）：");
+    Console.WriteLine(keyPair.PrivateKeyXml);
+    
+    Console.WriteLine($"\n密钥长度：{keyPair.KeySize} 位");
+}
+catch (ArgumentException ex)
+{
+    Console.WriteLine($"参数错误：{ex.Message}");
+}
+```
+
+### 6.生成 RSA2 密钥对 (仅返回 PEM 格式的字符串元组)
+
+```c#
+Tools.GenerateRsa2PemKeys(out string privateKeyPem, out string publicKeyPem, int keySize = 2048);	// 默认长度2048
+```
+
+- **参数**:
+  - `privateKeyPem`: 要输出的私钥变量
+  - `publicKeyPem`: 要输出的公钥变量
+  - `keySize`: 密钥长度
+
+```c#
+try
+{
+    //  默认密钥长度（2048位）
+    Tools.GenerateRsa2PemKeys(out string privateKeyPem, out string publicKeyPem);
+    
+    Console.WriteLine("公钥（PEM格式）：");
+    Console.WriteLine(publicKeyPem);
+    Console.WriteLine($"公钥长度：{publicKeyPem.Length} 字符");
+    
+    Console.WriteLine("\n私钥（PEM格式）：");
+    Console.WriteLine(privateKeyPem);
+    Console.WriteLine($"私钥长度：{privateKeyPem.Length} 字符");
+}
+catch (ArgumentException ex)
+{
+    Console.WriteLine($"参数错误：{ex.Message}");
+}
+```
+
+### 7. 生成 RSA2 密钥对 (仅返回 XML 格式的字符串元组)
+
+```c#
+Tools.GenerateRsa2XmlKeys(out string privateKeyXml, out string publicKeyXml, int keySize = 2048);	// 默认长度2048
+```
+
+- **参数**:
+  - `privateKeyXml`: 要输出的私钥变量
+  - `publicKeyXml`: 要输出的公钥变量
+  - `keySize`: 密钥长度
+
+```c#
+try
+{
+    // 使用默认密钥长度（2048位）
+    Tools.GenerateRsa2XmlKeys(out string privateKeyXml, out string publicKeyXml);
+    
+    Console.WriteLine("公钥（XML格式）：");
+    Console.WriteLine(publicKeyXml);
+    Console.WriteLine($"公钥长度：{publicKeyXml.Length} 字符");
+    
+    Console.WriteLine("\n私钥（XML格式）：");
+    Console.WriteLine(privateKeyXml);
+    Console.WriteLine($"私钥长度：{privateKeyXml.Length} 字符");
+}
+catch (ArgumentException ex)
+{
+    Console.WriteLine($"参数错误：{ex.Message}");
+}
+
+```
+
+
+
 ### Log日志类方法
 
 Log 类是一个静态日志工具类，提供按天分割的日志文件记录功能。日志文件默认存储在应用程序根目录下的 `Logs` 文件夹中
 
 #### 日志格式
 
-```tex
+```c#
 {时间戳} [{日志级别}] {类名}.{方法名} - {消息内容} {异常信息}
 示例：2025-12-01 15:02:46.1234 [INFO] OrderService.ProcessOrder - 开始处理订单 #1001
 ```

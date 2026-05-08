@@ -48,7 +48,7 @@ namespace HaiTang.Library.Api2018k
         private static readonly string _worring = "<错误>";
         private const string DefaultApiUrl = "http://api.2018k.cn";
         private static string OpenApiUrl = DefaultApiUrl;
-        private static string LocalApiUrl = "127.0.0.1";
+        private static string ErrorApiUrl = "0.0.0.0";
 
         private static int currentApiIndex = 0;
         private static readonly Dictionary<string, ApiHealthStatus> apiHealthStatus = new Dictionary<string, ApiHealthStatus>();
@@ -497,7 +497,7 @@ namespace HaiTang.Library.Api2018k
                 {
                     var data = new JObject { ["key"] = VarKey, ["value"] = Value };
                     string key = Tools.ExecuteWithDeveloperKey(k => k);
-                    string encryptedData = AesEncrypt(data, key);
+                    string encryptedData = Tools.ServerEncrypt(data, key);
                     string softwareId = Tools.ExecuteWithSoftwareId(id => id);
                     string requestUrl = $"{apiUrl}/v3/updateCloudVariables?info={Uri.EscapeDataString(encryptedData)}&softwareId={softwareId}&isAPI=y";
                     var response = await _httpClient.GetAsync(requestUrl);
@@ -593,7 +593,7 @@ namespace HaiTang.Library.Api2018k
                     // 获取开发者密钥
                     //string key = Tools.ExecuteWithDeveloperKey(k => k);
                     // 加密数据
-                    string encodedCiphertext = AesEncrypt(data, Tools.ExecuteWithDeveloperKey(k => k));
+                    string encodedCiphertext = Tools.ServerEncrypt(data, Tools.ExecuteWithDeveloperKey(k => k));
 
                     // 构建基础URL
                     // 发送请求
@@ -648,7 +648,7 @@ namespace HaiTang.Library.Api2018k
                 {
                     var data = new { authId = AuthId, machineCode = Code };
                     string key = Tools.ExecuteWithDeveloperKey(k => k);
-                    string encodedCiphertext = AesEncrypt(data, key);
+                    string encodedCiphertext = Tools.ServerEncrypt(data, key);
                     string softwareId = Tools.ExecuteWithSoftwareId(id => id);
                     string url = $"{apiUrl}/v3/replaceBind?softwareId={softwareId}&info={Uri.EscapeDataString(encodedCiphertext)}&isAPI=y";
                     var response = await _httpClient.GetAsync(url);
@@ -879,95 +879,7 @@ namespace HaiTang.Library.Api2018k
 
         #endregion
 
-        #region 加密解密
-
-        /// <summary>
-        /// 使用AES算法加密指定的数据对象。
-        /// </summary>
-        /// <param name="data">要加密的数据对象，将被序列化为JSON字符串。</param>
-        /// <param name="key">加密密钥，十六进制字符串。</param>
-        /// <returns>加密后的Base64字符串。</returns>
-        public string AesEncrypt(object data, string key)
-        {
-            // 将数据转换为JSON字符串
-            string plaintext = JsonConvert.SerializeObject(data);
-
-            // 使用AES加密
-            using (Aes aesAlg = Aes.Create())
-            {
-                aesAlg.Key = HexStringToByteArray(key);
-                aesAlg.IV = new byte[16]; // 16字节全零IV
-                aesAlg.Mode = CipherMode.CBC;
-                aesAlg.Padding = PaddingMode.PKCS7;
-
-                // 创建加密器
-                ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
-
-                // 加密数据
-                using (MemoryStream msEncrypt = new MemoryStream())
-                {
-                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                    {
-                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
-                        {
-                            swEncrypt.Write(plaintext);
-                        }
-                        byte[] encrypted = msEncrypt.ToArray();
-
-                        // 转换为Base64字符串
-                        return Convert.ToBase64String(encrypted);
-                    }
-                }
-            }
-        }
-        /// <summary>
-        /// 使用AES算法解密指定的Base64加密字符串。
-        /// </summary>
-        /// <param name="encryptedData">加密后的Base64字符串。</param>
-        /// <param name="key">解密密钥，十六进制字符串。</param>
-        /// <returns>解密后的字符串，如果解密失败则返回异常信息。</returns>
-        public string AesDecrypt(string encryptedData, string key)
-        {
-
-            try
-            {
-                // 将Base64密文转换为字节数组
-                byte[] cipherBytes = Convert.FromBase64String(encryptedData);
-
-                // 创建AES解密器
-                using (Aes aesAlg = Aes.Create())
-                {
-                    aesAlg.Key = HexStringToByteArray(key); ;
-                    aesAlg.IV = new byte[16];
-                    aesAlg.Mode = CipherMode.CBC;
-                    aesAlg.Padding = PaddingMode.PKCS7;
-
-                    // 创建解密器
-                    ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-
-                    // 执行解密
-                    using (MemoryStream msDecrypt = new MemoryStream(cipherBytes))
-                    {
-                        using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                        {
-                            using (StreamReader srDecrypt = new StreamReader(csDecrypt))
-                            {
-                                // 返回解密后的UTF8字符串
-                                return srDecrypt.ReadToEnd();
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return $"程序异常: {ex.Message}";
-            }
-
-        }
-
-
-        #endregion
+        
 
         #region 私有方法
 
@@ -989,7 +901,7 @@ namespace HaiTang.Library.Api2018k
                 if (string.IsNullOrEmpty(jsonResult)) return new Mysoft();
                 var _JsonData = JsonConvert.DeserializeObject<Json2018K>(jsonResult);
                 if (_JsonData?.user == null) return new Mysoft();
-                string JsonData = _JsonData.data != null ? AesDecrypt(_JsonData.data, developerKey) : string.Empty;
+                string JsonData = _JsonData.data != null ? Tools.ServerDecrypt(_JsonData.data, developerKey) : string.Empty;
                 if (string.IsNullOrEmpty(JsonData)) return new Mysoft();
                 var json2018K = JsonConvert.DeserializeObject<Json2018K>(JsonData);
                 return json2018K == null ? new Mysoft() : ConvertToMysoftConfig(json2018K);
@@ -1197,22 +1109,20 @@ namespace HaiTang.Library.Api2018k
                     }
                     catch { continue; }
                 }
-                return false;
+                throw new Exception($"API健康检查失败，所有检查点都不可用: {apiUrl}");
             }
             catch (Exception ex) when (ex is TaskCanceledException || ex is OperationCanceledException)
             {
-                Log.Error("API健康检测超时");
-                return false;
+                throw new Exception($"API健康检查超时: {apiUrl}", ex);
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException ex)
             {
-                Log.Error("API健康检测网络请求异常");
-                return false;
+                throw new Exception($"API健康检测网络请求异常: {apiUrl}", ex);
+
             }
-            catch
+            catch (Exception ex)
             {
-                Log.Error("API健康检测出现未知异常");
-                return false;
+                throw new Exception($"API健康检测出现未知异常: {apiUrl}", ex);
             }
         }
 
@@ -1224,7 +1134,18 @@ namespace HaiTang.Library.Api2018k
         {
             if (Constants.DEVELOPMENT_MODE)
             {
-                return Constants.DEVELOPMENT_API_URL;
+                
+                if (IsApiHealthy(Constants.DEVELOPMENT_API_URL[0]))
+                    return Constants.DEVELOPMENT_API_URL[0];
+
+                // 如果本地API不可用，尝试其他开发者API
+                for (int i = 1; i < Constants.DEVELOPMENT_API_URL.Length; i++)
+                {
+                    if (IsApiHealthy(Constants.DEVELOPMENT_API_URL[i]))
+                        return Constants.DEVELOPMENT_API_URL[i];
+                }
+
+                return Constants.DEVELOPMENT_API_URL[0]; // 默认返回第一个
             }
             lock (lockObject)
             {
@@ -1241,7 +1162,7 @@ namespace HaiTang.Library.Api2018k
                         return apiUrl;
                     }
                 }
-                OpenApiUrl = LocalApiUrl;
+                OpenApiUrl = ErrorApiUrl;
                 return OpenApiUrl;
             }
         }
@@ -1287,7 +1208,7 @@ namespace HaiTang.Library.Api2018k
         private static async Task<string> ExecuteApiRequest(Func<string, Task<string>> requestFunc)
         {
             string bestApiUrl = GetBestAvailableApiUrl();
-            if (bestApiUrl == LocalApiUrl) return string.Empty;
+            if (bestApiUrl == ErrorApiUrl) return string.Empty;
             try
             {
                 var result = await requestFunc(bestApiUrl);
@@ -1354,7 +1275,7 @@ namespace HaiTang.Library.Api2018k
             if (cipherData.Length < 16)
             {
                 Log.Error("无效的加密文本");
-                throw new ArgumentException("Invalid encrypted text");
+                throw new ArgumentException("无效的加密文本");
             }
             byte[] saltData = new byte[8];
             Array.Copy(cipherData, 8, saltData, 0, 8);
@@ -1381,21 +1302,7 @@ namespace HaiTang.Library.Api2018k
             }
         }
 
-         // 辅助方法：将十六进制字符串转换为字节数组
-        private static byte[] HexStringToByteArray(string hex)
-        {
-            if (hex.Length % 2 != 0)
-            {
-                throw new ArgumentException("十六进制字符串长度必须是偶数");
-            }
-
-            byte[] bytes = new byte[hex.Length / 2];
-            for (int i = 0; i < hex.Length; i += 2)
-            {
-                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
-            }
-            return bytes;
-        }
+        
 
         /// <summary>
         /// 生成加密密钥和初始化向量
