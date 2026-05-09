@@ -711,6 +711,102 @@ namespace HaiTang.Library.Api2018k
             });
         }
 
+        /// <summary>
+        /// 检查输入值是否在白名单中
+        /// </summary>
+        /// <param name="input">要检查的输入值</param>
+        /// <returns>
+        /// 返回一个元组，包含：
+        /// - Success: 操作是否成功
+        /// - Message: 操作结果消息
+        /// </returns>
+        public async Task<(bool Success, string Message)> GetWhiteList(string input)
+        {
+            var (success, _) = await InitializationAsync();
+            if (!success) return (false, _error);
+            string jsonData = string.Empty;
+            bool result = false;
+            string _message =await ExecuteApiRequest(async (apiUrl) =>
+            {
+                string softwareId = Tools.ExecuteWithSoftwareId(id => id);
+                string requestUrl = $"{apiUrl}/v3/getWhiteList?softwareId={softwareId}&isAPI=y";
+                var response = await _httpClient.GetAsync(requestUrl);
+                response.EnsureSuccessStatusCode();
+                string jsonString = await response.Content.ReadAsStringAsync();
+                var _JsonData = JsonConvert.DeserializeObject<Json2018K>(jsonString);
+                string key = Tools.ExecuteWithDeveloperKey(k => k);
+                jsonData = _JsonData?.data != null ? AesDecryptData(_JsonData.data, key) : string.Empty;
+                string?[] resultArray = JObject.Parse(jsonData)
+                        .TryGetValue("whiteList", out var whiteListToken)
+                        ? whiteListToken is JArray array
+                        ? array.Select(x => x["value"]?.Value<string>())
+                        .Where(v => v != null)
+                        .ToArray()
+                    : Array.Empty<string>()
+                : Array.Empty<string>();
+                if (resultArray.Contains(input))
+                {
+                    result = true;
+                    return $"已在白名单中找到  {input}";
+                }
+                else
+                {
+                    result = false;
+                    return $"未在白名单中找到  {input}";
+                }
+                
+            });
+            return (result, _message);
+
+        }
+
+        /// <summary>
+        /// 检查输入值是否在黑名单中
+        /// </summary>
+        /// <param name="input">要检查的输入值</param>
+        /// <returns>
+        /// 返回一个元组，包含：
+        /// - Success: 操作是否成功
+        /// - Message: 操作结果消息
+        /// </returns>
+        public async Task<(bool Success, string Message)> GetBlackList(string input)
+        {
+            var (success, _) = await InitializationAsync();
+            if (!success) return (false, _error);
+            string jsonData = string.Empty;
+            bool result = false;
+            string _message = await ExecuteApiRequest(async (apiUrl) =>
+            {
+                string softwareId = Tools.ExecuteWithSoftwareId(id => id);
+                string requestUrl = $"{apiUrl}/v3/getBlackList?softwareId={softwareId}&isAPI=y";
+                var response = await _httpClient.GetAsync(requestUrl);
+                response.EnsureSuccessStatusCode();
+                string jsonString = await response.Content.ReadAsStringAsync();
+                var _JsonData = JsonConvert.DeserializeObject<Json2018K>(jsonString);
+                string key = Tools.ExecuteWithDeveloperKey(k => k);
+                jsonData = _JsonData?.data != null ? AesDecryptData(_JsonData.data, key) : string.Empty;
+                string?[] resultArray = JObject.Parse(jsonData)
+                        .TryGetValue("blackList", out var whiteListToken)
+                        ? whiteListToken is JArray array
+                        ? array.Select(x => x["value"]?.Value<string>())
+                        .Where(v => v != null)
+                        .ToArray()
+                    : Array.Empty<string>()
+                : Array.Empty<string>();
+                if (resultArray.Contains(input))
+                {
+                    result = true;
+                    return $"已在黑名单中找到  {input}";
+                }
+                else
+                {
+                    result = false;
+                    return $"未在黑名单中找到  {input}";
+                }
+
+            });
+            return (result, _message);
+        }
         #endregion
 
         #region 用户方法
@@ -1134,18 +1230,8 @@ namespace HaiTang.Library.Api2018k
         {
             if (Constants.DEVELOPMENT_MODE)
             {
-                
-                if (IsApiHealthy(Constants.DEVELOPMENT_API_URL[0]))
-                    return Constants.DEVELOPMENT_API_URL[0];
+                return Constants.CurrentApiUrl; 
 
-                // 如果本地API不可用，尝试其他开发者API
-                for (int i = 1; i < Constants.DEVELOPMENT_API_URL.Length; i++)
-                {
-                    if (IsApiHealthy(Constants.DEVELOPMENT_API_URL[i]))
-                        return Constants.DEVELOPMENT_API_URL[i];
-                }
-
-                return Constants.DEVELOPMENT_API_URL[0]; // 默认返回第一个
             }
             lock (lockObject)
             {

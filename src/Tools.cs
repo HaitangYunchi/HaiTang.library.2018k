@@ -1,4 +1,4 @@
-﻿/*----------------------------------------------------------------
+/*----------------------------------------------------------------
  * 版权所有 (c) 2025 HaiTangYunchi  保留所有权利
  * CLR版本：4.0.30319.42000
  * 公司名称：HaiTangYunchi
@@ -247,23 +247,48 @@ namespace HaiTang.Library.Api2018k
         }
         /// <summary>
         /// 使用AES算法解密指定的Base64加密字符串。
+        /// 支持标准AES格式和OpenSSL格式（以"Saltated__"开头）。
         /// </summary>
         /// <param name="encryptedData">加密后的Base64字符串。</param>
         /// <param name="key">解密密钥，十六进制字符串。</param>
         /// <returns>解密后的字符串，如果解密失败则返回异常信息。</returns>
         public static string ServerDecrypt(string encryptedData, string key)
         {
-
             try
             {
-                // 将Base64密文转换为字节数组
                 byte[] cipherBytes = Convert.FromBase64String(encryptedData);
+                
+                // 检查是否为 OpenSSL 格式（以 "Salted__" 开头）
+                byte[] salt = null;
+                if (cipherBytes.Length > 16 && Encoding.ASCII.GetString(cipherBytes, 0, 8) == "Salted__")
+                {
+                    // 提取盐值（第9-16字节）
+                    salt = new byte[8];
+                    Array.Copy(cipherBytes, 8, salt, 0, 8);
+                    // 提取实际密文
+                    byte[] temp = new byte[cipherBytes.Length - 16];
+                    Array.Copy(cipherBytes, 16, temp, 0, temp.Length);
+                    cipherBytes = temp;
+                }
 
                 // 创建AES解密器
                 using (Aes aesAlg = Aes.Create())
                 {
-                    aesAlg.Key = HexStringToByteArray(key); ;
-                    aesAlg.IV = new byte[16];
+                    byte[] keyBytes = HexStringToByteArray(key);
+                    
+                    if (salt != null)
+                    {
+                        // OpenSSL 格式：使用盐值派生密钥和IV
+                        byte[] derived = OpenSslEVPBytesToKey(keyBytes, salt);
+                        aesAlg.Key = derived.Take(32).ToArray();
+                        aesAlg.IV = derived.Skip(32).Take(16).ToArray();
+                    }
+                    else
+                    {
+                        aesAlg.Key = keyBytes;
+                        aesAlg.IV = new byte[16];
+                    }
+                    
                     aesAlg.Mode = CipherMode.CBC;
                     aesAlg.Padding = PaddingMode.PKCS7;
 
@@ -288,7 +313,28 @@ namespace HaiTang.Library.Api2018k
             {
                 return $"程序异常: {ex.Message}";
             }
+        }
 
+        /// <summary>
+        /// OpenSSL EVP_BytesToKey 算法实现
+        /// 用于从密码和盐值派生密钥和IV
+        /// </summary>
+        private static byte[] OpenSslEVPBytesToKey(byte[] key, byte[] salt)
+        {
+            byte[] result = new byte[48]; // 32字节key + 16字节IV
+            byte[] current = new byte[0];
+            
+            for (int i = 0; i < 3; i++)
+            {
+                byte[] input = current.Concat(key).Concat(salt).ToArray();
+                using (MD5 md5 = MD5.Create())
+                {
+                    current = md5.ComputeHash(input);
+                }
+                Array.Copy(current, 0, result, i * 16, current.Length);
+            }
+            
+            return result;
         }
 
 

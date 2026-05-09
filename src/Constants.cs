@@ -69,11 +69,8 @@ namespace HaiTang.Library.Api2018k
         /// 此地址指向本地开发服务器
         /// 仅当 DEVELOPMENT_MODE 为 true 时有效
         /// </remarks>
-        public static string[] DEVELOPMENT_API_URL = 
-        { 
-            "http://127.0.0.1:3000" ,
-            "http://192.168.31.100:3000"
-        };
+        public static string DEVELOPMENT_API_URL = "http://192.168.31.100";
+        
 
         /// <summary>API服务器地址列表，用于实现多地址故障转移和负载均衡</summary>
         
@@ -88,7 +85,7 @@ namespace HaiTang.Library.Api2018k
         /// <summary>
         /// 获取当前使用的 API 地址（根据开发模式动态返回）
         /// </summary>
-        public static string[] CurrentApiUrl => DEVELOPMENT_MODE ? DEVELOPMENT_API_URL : ApiAddressList;
+        public static string CurrentApiUrl => DEVELOPMENT_MODE ? $"{DEVELOPMENT_API_URL}:3000" : ApiAddressList[0];
 
         /// <summary>SDK 后台 API 基础 URL 地址</summary>
         public static string AdminBaseUrl => DEVELOPMENT_MODE ? $"{DEVELOPMENT_API_URL}/api/adm/" : "https://admin.2018k.cn/api/adm/";

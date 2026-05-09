@@ -24,9 +24,10 @@ Tools.SetDeveloperKey(secureKey);
 - **开发者模式**:
 
   - 当开发者调用  `Constants.DEVELOPMENT_MODE=true`  时，即进入  **开发者模式** ，默认 `false` 状态
-  - 在  **开发者模式**  下，所有的调试地址，都将从  ` Constants.DEVELOPMENT_API_URL[]`   获取,此模式仅供  **API Server服务端开发调试**  用
+  - 在  **开发者模式**  下，所有调试地址，都将从  ` Constants.DEVELOPMENT_API_URL`   获取,此模式仅供  **API Server 服务端开发调试** 
   - 默认开发者  `ApiUrl` 为  `127.0.0.1:3000`
-
+  - 开发者也可以直接给  `Constants.DEVELOPMENT_API_URL` 赋值：` Constants.DEVELOPMENT_API_URL = "http://api.localhost.com:3000";`
+  
   ​                 
 
 ## 快速开始
