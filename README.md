@@ -25,8 +25,8 @@ Tools.SetDeveloperKey(secureKey);
 
   - 当开发者调用  `Constants.DEVELOPMENT_MODE=true`  时，即进入  **开发者模式** ，默认 `false` 状态
   - 在  **开发者模式**  下，所有调试地址，都将从  ` Constants.DEVELOPMENT_API_URL`   获取,此模式仅供  **API Server 服务端开发调试** 
-  - 默认开发者  `ApiUrl` 为  `127.0.0.1:3000`
-  - 开发者也可以直接给  `Constants.DEVELOPMENT_API_URL` 赋值：` Constants.DEVELOPMENT_API_URL = "http://api.localhost.com:3000";`
+  - 默认开发者  `ApiUrl` 为  `127.0.0.1`
+  - 开发者也可以直接给  `Constants.DEVELOPMENT_API_URL` 赋值：` Constants.DEVELOPMENT_API_URL = "http://api.localhost.com";`
   
   ​                 
 
@@ -211,6 +211,34 @@ long remainingTime = await update.GetRemainingUsageTime();
   - `0`: 已过期
   - `1`: 未注册
   - 其他: 剩余时间戳（毫秒）
+
+#### 黑白名单验证
+
+**白名单验证**
+
+```c#
+var (success, message) = await update.GetWhiteList("input");
+```
+
+- **参数**:
+  - `input`:待检测文本
+- **返回值**:`bool` `string`
+  - `true`: 数据库中存在
+  - `false`:数据库中不存在
+  - `message`: 返回消息文本
+
+**黑名单验证**
+
+```c#
+var (success, message) = await update.GetBlackList("input");
+```
+
+- **参数**:
+  - `input`:待检测文本
+- **返回值**:`bool` `string`
+  - `true`: 数据库中存在
+  - `false`:据库中不存在
+  - `message`: 返回消息文本
 
 ## 用户管理方法
 

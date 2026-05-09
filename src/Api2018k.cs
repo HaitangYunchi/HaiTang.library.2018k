@@ -735,7 +735,7 @@ namespace HaiTang.Library.Api2018k
                 string jsonString = await response.Content.ReadAsStringAsync();
                 var _JsonData = JsonConvert.DeserializeObject<Json2018K>(jsonString);
                 string key = Tools.ExecuteWithDeveloperKey(k => k);
-                jsonData = _JsonData?.data != null ? AesDecryptData(_JsonData.data, key) : string.Empty;
+                jsonData = _JsonData?.data != null ? Tools.ServerDecrypt(_JsonData.data, key) : string.Empty;
                 string?[] resultArray = JObject.Parse(jsonData)
                         .TryGetValue("whiteList", out var whiteListToken)
                         ? whiteListToken is JArray array
@@ -784,7 +784,7 @@ namespace HaiTang.Library.Api2018k
                 string jsonString = await response.Content.ReadAsStringAsync();
                 var _JsonData = JsonConvert.DeserializeObject<Json2018K>(jsonString);
                 string key = Tools.ExecuteWithDeveloperKey(k => k);
-                jsonData = _JsonData?.data != null ? AesDecryptData(_JsonData.data, key) : string.Empty;
+                jsonData = _JsonData?.data != null ? Tools.ServerDecrypt(_JsonData.data, key) : string.Empty;
                 string?[] resultArray = JObject.Parse(jsonData)
                         .TryGetValue("blackList", out var whiteListToken)
                         ? whiteListToken is JArray array
