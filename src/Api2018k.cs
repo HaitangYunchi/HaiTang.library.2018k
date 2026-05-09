@@ -575,10 +575,9 @@ namespace HaiTang.Library.Api2018k
         /// <param name="hour">认证小时数</param>
         /// <param name="minute">认证分钟数</param>
         /// <param name="remark">备注信息</param>
-        /// <param name="softwareId">软件ID</param>
         /// <param name="bindCount">最大换绑次数</param>
         /// <returns>返回创建结果</returns>
-        public async Task<string> CreateNetworkAuthentication(int? day, int? hour, int? minute,string? remark, string softwareId, string? bindCount = null)
+        public async Task<string> CreateNetworkAuthentication(int? day=null, int? hour = null, int? minute = null, string? remark = null,string? bindCount = null)
         {
             string baseUrl=string.Empty;
             return await ExecuteApiRequest(async (apiUrl) =>
@@ -595,8 +594,8 @@ namespace HaiTang.Library.Api2018k
                         times = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds
                     };
 
-                    // 获取开发者密钥
-                    //string key = Tools.ExecuteWithDeveloperKey(k => k);
+                    
+                    string softwareId = Tools.ExecuteWithSoftwareId(id => id);
                     // 加密数据
                     string encodedCiphertext = Tools.ServerEncrypt(data, Tools.ExecuteWithDeveloperKey(k => k));
 
