@@ -32,6 +32,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HaiTang.Library.Api2018k
 {
@@ -570,12 +571,14 @@ namespace HaiTang.Library.Api2018k
         /// <summary>
         /// 创建网络认证
         /// </summary>
-        /// <param name="day">有效天数</param>
+        /// <param name="day">认证天数</param>
+        /// <param name="hour">认证小时数</param>
+        /// <param name="minute">认证分钟数</param>
         /// <param name="remark">备注信息</param>
         /// <param name="softwareId">软件ID</param>
-        /// <param name="bindCount">换绑次数）</param>
-        /// <returns>API响应内容</returns>
-        public async Task<string> CreateNetworkAuthentication(int day, string remark, string softwareId, string? bindCount = null)
+        /// <param name="bindCount">最大换绑次数</param>
+        /// <returns>返回创建结果</returns>
+        public async Task<string> CreateNetworkAuthentication(int? day, int? hour, int? minute,string? remark, string softwareId, string? bindCount = null)
         {
             string baseUrl=string.Empty;
             return await ExecuteApiRequest(async (apiUrl) =>
@@ -586,6 +589,8 @@ namespace HaiTang.Library.Api2018k
                     var data = new
                     {
                         day,
+                        hour,
+                        minute,
                         remark,
                         times = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds
                     };
@@ -729,22 +734,15 @@ namespace HaiTang.Library.Api2018k
             string _message =await ExecuteApiRequest(async (apiUrl) =>
             {
                 string softwareId = Tools.ExecuteWithSoftwareId(id => id);
-                string requestUrl = $"{apiUrl}/v3/getWhiteList?softwareId={softwareId}&isAPI=y";
+                string requestUrl = $"{apiUrl}/v3/getWhiteList?softwareId={softwareId}&check={input}&isAPI=y";
                 var response = await _httpClient.GetAsync(requestUrl);
                 response.EnsureSuccessStatusCode();
                 string jsonString = await response.Content.ReadAsStringAsync();
                 var _JsonData = JsonConvert.DeserializeObject<Json2018K>(jsonString);
                 string key = Tools.ExecuteWithDeveloperKey(k => k);
                 jsonData = _JsonData?.data != null ? Tools.ServerDecrypt(_JsonData.data, key) : string.Empty;
-                string?[] resultArray = JObject.Parse(jsonData)
-                        .TryGetValue("whiteList", out var whiteListToken)
-                        ? whiteListToken is JArray array
-                        ? array.Select(x => x["value"]?.Value<string>())
-                        .Where(v => v != null)
-                        .ToArray()
-                    : Array.Empty<string>()
-                : Array.Empty<string>();
-                if (resultArray.Contains(input))
+                Tools.ToBoolean(jsonData, out bool _result);
+                if (_result)
                 {
                     result = true;
                     return $"已在白名单中找到  {input}";
@@ -771,38 +769,28 @@ namespace HaiTang.Library.Api2018k
         /// </returns>
         public async Task<(bool Success, string Message)> GetBlackList(string input)
         {
+            bool result = false;
             var (success, _) = await InitializationAsync();
             if (!success) return (false, _error);
             string jsonData = string.Empty;
-            bool result = false;
             string _message = await ExecuteApiRequest(async (apiUrl) =>
             {
                 string softwareId = Tools.ExecuteWithSoftwareId(id => id);
-                string requestUrl = $"{apiUrl}/v3/getBlackList?softwareId={softwareId}&isAPI=y";
+                string requestUrl = $"{apiUrl}/v3/getBlackList?softwareId={softwareId}&&check={input}&isAPI=y";
                 var response = await _httpClient.GetAsync(requestUrl);
                 response.EnsureSuccessStatusCode();
                 string jsonString = await response.Content.ReadAsStringAsync();
                 var _JsonData = JsonConvert.DeserializeObject<Json2018K>(jsonString);
                 string key = Tools.ExecuteWithDeveloperKey(k => k);
                 jsonData = _JsonData?.data != null ? Tools.ServerDecrypt(_JsonData.data, key) : string.Empty;
-                string?[] resultArray = JObject.Parse(jsonData)
-                        .TryGetValue("blackList", out var whiteListToken)
-                        ? whiteListToken is JArray array
-                        ? array.Select(x => x["value"]?.Value<string>())
-                        .Where(v => v != null)
-                        .ToArray()
-                    : Array.Empty<string>()
-                : Array.Empty<string>();
-                if (resultArray.Contains(input))
+                Tools.ToBoolean(jsonData, out bool _result);
+                if (_result)
                 {
                     result = true;
                     return $"已在黑名单中找到  {input}";
                 }
-                else
-                {
-                    result = false;
-                    return $"未在黑名单中找到  {input}";
-                }
+                result = false;
+                return $"未在黑名单中找到  {input}";
 
             });
             return (result, _message);
