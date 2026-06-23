@@ -104,6 +104,14 @@ namespace HaiTang.Library.Api2018k.Models
         public string numberOfDays { get; set; } = string.Empty;
 
         /// <summary>
+        /// 有效小时数
+        /// </summary>
+        public string numberOfHours { get; set; } = string.Empty;
+        /// <summary>
+        /// 有效分钟数
+        /// </summary>
+        public string numberOfMinutes { get; set; } = string.Empty;
+        /// <summary>
         /// 网络验证备注
         /// </summary>
         public string networkVerificationRemarks { get; set; } = string.Empty;
@@ -214,6 +222,14 @@ namespace HaiTang.Library.Api2018k.Models
         /// 有效天数
         /// </summary>
         public int numberOfDays { get; set; } = 0;
+        /// <summary>
+        /// 有效小时数
+        /// </summary>
+        public int numberOfHours { get; set; } = 0;
+        /// <summary>
+        /// 有效分钟数
+        /// </summary>
+        public int numberOfMinutes { get; set; } = 0;
 
         /// <summary>
         /// 过期时间戳

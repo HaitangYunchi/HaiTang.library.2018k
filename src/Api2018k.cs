@@ -32,7 +32,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HaiTang.Library.Api2018k
 {
@@ -48,6 +47,11 @@ namespace HaiTang.Library.Api2018k
         private static readonly string _error = "<空>";
         private static readonly string _worring = "<错误>";
         private const string DefaultApiUrl = "http://api.2018k.cn";
+        
+        /// <summary>
+        /// 表示永久有效的时间戳值（2100-01-01 00:00:00 UTC）
+        /// </summary>
+        private const long PermanentTimestamp = 7258089599000;
         private static string OpenApiUrl = DefaultApiUrl;
         private static string ErrorApiUrl = "0.0.0.0";
 
@@ -367,13 +371,20 @@ namespace HaiTang.Library.Api2018k
         }
 
         /// <summary>
-        /// 获取软件剩余使用天数
+        /// 获取软件剩余使用时间（按优先级返回：天 > 小时 > 分钟）
         /// </summary>
-        /// <returns>返回剩余天数</returns>
+        /// <returns>返回剩余时间数值（天数、小时数或分钟数）</returns>
         public async Task<int> GetNumberOfDays()
         {
             var (_, info) = await InitializationAsync();
-            return info?.numberOfDays ?? 0;
+            if (info == null) return 0;
+            
+            // 优先级：天数 > 小时 > 分钟
+            if (info.numberOfDays > 0) return info.numberOfDays;
+            if (info.numberOfHours > 0) return info.numberOfHours;
+            if (info.numberOfMinutes > 0) return info.numberOfMinutes;
+            
+            return 0;
         }
 
         /// <summary>
@@ -446,7 +457,7 @@ namespace HaiTang.Library.Api2018k
             var (JsonData, Success) = await GetCloudVariablesData();
             if (!Success) return _error;
             JArray jsonArray = JArray.Parse(JsonData);
-            JObject result = new JObject();
+            JObject result = new();
             foreach (JObject item in jsonArray)
             {
                 string key = item["key"]?.ToString() ?? string.Empty;
@@ -579,7 +590,6 @@ namespace HaiTang.Library.Api2018k
         /// <returns>返回创建结果</returns>
         public async Task<string> CreateNetworkAuthentication(int? day=null, int? hour = null, int? minute = null, string? remark = null,string? bindCount = null)
         {
-            string baseUrl=string.Empty;
             return await ExecuteApiRequest(async (apiUrl) =>
             {
                 try
@@ -599,21 +609,15 @@ namespace HaiTang.Library.Api2018k
                     // 加密数据
                     string encodedCiphertext = Tools.ServerEncrypt(data, Tools.ExecuteWithDeveloperKey(k => k));
 
-                    // 构建基础URL
-                    // 发送请求
-                    baseUrl = $"{apiUrl}/v3/createNetworkAuthentication?info={Uri.EscapeDataString(encodedCiphertext)}&softwareId={softwareId}&isAPI=y";
+                    string requestUrl = $"{apiUrl}/v3/createNetworkAuthentication?info={Uri.EscapeDataString(encodedCiphertext)}&softwareId={softwareId}&isAPI=y";
 
                     
-                    // 如果提供了bindCount参数，则添加到查询参数中
                     if (!string.IsNullOrEmpty(bindCount))
                     {
-                        baseUrl = $"{baseUrl}&bindCount={bindCount}";
+                        requestUrl = $"{requestUrl}&bindCount={bindCount}";
                     }
 
-                   
-
-                    // 发送请求
-                    var response = await _httpClient.GetAsync(baseUrl);
+                    var response = await _httpClient.GetAsync(requestUrl);
                     response.EnsureSuccessStatusCode();
 
                     // 读取响应内容
@@ -632,7 +636,7 @@ namespace HaiTang.Library.Api2018k
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(ex.Message); // 重新抛出异常，让调用者处理
+                    throw new Exception(ex.Message, ex);
                 }
             });
         }
@@ -680,7 +684,7 @@ namespace HaiTang.Library.Api2018k
             if (softwareInfo == null) return 1;
             try
             {
-                if (softwareInfo.isItEffective && softwareInfo.expirationDate == 7258089599000)
+                if (softwareInfo.isItEffective && softwareInfo.expirationDate == PermanentTimestamp)
                     return -1;
                 else if (softwareInfo.isItEffective && softwareInfo.expirationDate > 0)
                 {
@@ -775,7 +779,7 @@ namespace HaiTang.Library.Api2018k
             string _message = await ExecuteApiRequest(async (apiUrl) =>
             {
                 string softwareId = Tools.ExecuteWithSoftwareId(id => id);
-                string requestUrl = $"{apiUrl}/v3/getBlackList?softwareId={softwareId}&&check={input}&isAPI=y";
+                string requestUrl = $"{apiUrl}/v3/getBlackList?softwareId={softwareId}&check={input}&isAPI=y";
                 var response = await _httpClient.GetAsync(requestUrl);
                 response.EnsureSuccessStatusCode();
                 string jsonString = await response.Content.ReadAsStringAsync();
@@ -1001,14 +1005,24 @@ namespace HaiTang.Library.Api2018k
             if (source == null) return new Mysoft();
             long _expriationDate;
             int _numberOfDays;
+            int _numberOfHours;
+            int _numberOfMinutes;
             if (source.isItEffective == "y" && string.IsNullOrEmpty(source.expirationDate))
                 _expriationDate = 7258089599000;
             else
                 _expriationDate = long.TryParse(source.expirationDate, out long expiration) ? expiration : 0;
-            if (source.isItEffective == "y" && string.IsNullOrEmpty(source.numberOfDays))
+            if (source.isItEffective == "y" && string.IsNullOrEmpty(source.numberOfDays) && string.IsNullOrEmpty(source.numberOfHours) && string.IsNullOrEmpty(source.numberOfMinutes))
+            {
                 _numberOfDays = 99999;
+                _numberOfHours = 0;
+                _numberOfMinutes = 0;
+            }
             else
+            {
                 _numberOfDays = int.TryParse(source.numberOfDays, out int days) ? days : 0;
+                _numberOfHours = int.TryParse(source.numberOfHours, out int hours) ? hours : 0;
+                _numberOfMinutes = int.TryParse(source.numberOfMinutes, out int minutes) ? minutes : 0;
+            }
 
             return new Mysoft
             {
@@ -1024,6 +1038,8 @@ namespace HaiTang.Library.Api2018k
                 networkVerificationId = source.networkVerificationId ?? string.Empty,
                 isItEffective = source.isItEffective?.ToLower() == "y",
                 numberOfDays = _numberOfDays,
+                numberOfHours = _numberOfHours,
+                numberOfMinutes = _numberOfMinutes,
                 networkVerificationRemarks = source.networkVerificationRemarks ?? string.Empty,
                 expirationDate = _expriationDate,
                 downloadLink = source.downloadLink ?? string.Empty,
@@ -1366,11 +1382,7 @@ namespace HaiTang.Library.Api2018k
                 using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
                 using (StreamReader sr = new StreamReader(cs, Encoding.UTF8))
                 {
-                    var utf8Result = sr.ReadToEnd();
-                    byte[] ansiBytes = Encoding.Default.GetBytes(utf8Result);
-                    var json = Encoding.Default.GetString(ansiBytes);
-                    var parsedJson = JsonConvert.DeserializeObject(json);
-                    return JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
+                    return sr.ReadToEnd();
                 }
             }
         }

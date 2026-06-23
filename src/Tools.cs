@@ -714,18 +714,16 @@ namespace HaiTang.Library.Api2018k
         /// <param name="input">普通字符串</param>
         public static SecureString CreateSecureString(string input)
         {
-
-            if (string.IsNullOrEmpty(input))
-                return null;
-
             var secureString = new SecureString();
-            foreach (char c in input)
+            if (!string.IsNullOrEmpty(input))
             {
-                secureString.AppendChar(c);
+                foreach (char c in input)
+                {
+                    secureString.AppendChar(c);
+                }
             }
-            secureString.MakeReadOnly(); // 设置为只读状态，防止后续修改
+            secureString.MakeReadOnly();
             return secureString;
-
         }
 
         #endregion

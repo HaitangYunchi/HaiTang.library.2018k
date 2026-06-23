@@ -1,4 +1,4 @@
-﻿/*----------------------------------------------------------------
+/*----------------------------------------------------------------
  * 版权所有 (c) 2025 HaiTangYunchi  保留所有权利
  * CLR版本：4.0.30319.42000
  * 公司名称：HaiTangYunchi
@@ -33,8 +33,12 @@ namespace HaiTang.Library.Api2018k
     /// </summary>
     public static class Constants
     {
-        
+        #region 敏感信息（SecureString存储）
 
+        private static SecureString _email = new SecureString();
+        private static SecureString _password = new SecureString();
+
+        #endregion
         #region 非敏感公共字段
 
         /// <summary>本地机器码，用于绑定和验证软件使用权限</summary>
@@ -44,10 +48,18 @@ namespace HaiTang.Library.Api2018k
         public static Mysoft softwareInfo = new Mysoft();
 
         /// <summary>用户邮箱，用于用户登录和相关操作</summary>
-        public static string EMAIL = string.Empty;
+        public static string EMAIL
+        {
+            get => GetEmail();
+            set => SetEmail(value);
+        }
 
         /// <summary>用户密码，用于用户登录和相关操作</summary>
-        public static string PASSWORD = string.Empty;
+        public static string PASSWORD
+        {
+            get => GetPassword();
+            set => SetPassword(value);
+        }
 
         /// <summary>检查状态标志，用于控制某些功能的启用或禁用</summary>
         public static bool CHECK = false;
@@ -90,9 +102,101 @@ namespace HaiTang.Library.Api2018k
         /// <summary>SDK 后台 API 基础 URL 地址</summary>
         public static string AdminBaseUrl => DEVELOPMENT_MODE ? $"{DEVELOPMENT_API_URL}/api/adm/" : "https://admin.2018k.cn/api/adm/";
 
-        
         #endregion
 
-        
+        #region 敏感信息访问方法
+
+        private static string GetEmail()
+        {
+            IntPtr ptr = IntPtr.Zero;
+            try
+            {
+                ptr = Marshal.SecureStringToGlobalAllocUnicode(_email);
+                return Marshal.PtrToStringUni(ptr) ?? string.Empty;
+            }
+            finally
+            {
+                if (ptr != IntPtr.Zero)
+                    Marshal.ZeroFreeGlobalAllocUnicode(ptr);
+            }
+        }
+
+        private static void SetEmail(string value)
+        {
+            _email.Clear();
+            if (!string.IsNullOrEmpty(value))
+            {
+                foreach (char c in value)
+                    _email.AppendChar(c);
+            }
+            _email.MakeReadOnly();
+        }
+
+        private static string GetPassword()
+        {
+            IntPtr ptr = IntPtr.Zero;
+            try
+            {
+                ptr = Marshal.SecureStringToGlobalAllocUnicode(_password);
+                return Marshal.PtrToStringUni(ptr) ?? string.Empty;
+            }
+            finally
+            {
+                if (ptr != IntPtr.Zero)
+                    Marshal.ZeroFreeGlobalAllocUnicode(ptr);
+            }
+        }
+
+        private static void SetPassword(string value)
+        {
+            _password.Clear();
+            if (!string.IsNullOrEmpty(value))
+            {
+                foreach (char c in value)
+                    _password.AppendChar(c);
+            }
+            _password.MakeReadOnly();
+        }
+
+        /// <summary>
+        /// 安全执行：获取用户邮箱明文，在委托内使用，用完自动擦除内存。
+        /// </summary>
+        public static T ExecuteWithEmail<T>(Func<string, T> action)
+        {
+            IntPtr ptr = IntPtr.Zero;
+            try
+            {
+                ptr = Marshal.SecureStringToGlobalAllocUnicode(_email);
+                string plain = Marshal.PtrToStringUni(ptr) ?? string.Empty;
+                return action(plain);
+            }
+            finally
+            {
+                if (ptr != IntPtr.Zero)
+                    Marshal.ZeroFreeGlobalAllocUnicode(ptr);
+            }
+        }
+
+        /// <summary>
+        /// 安全执行：获取用户密码明文，在委托内使用，用完自动擦除内存。
+        /// </summary>
+        public static T ExecuteWithPassword<T>(Func<string, T> action)
+        {
+            IntPtr ptr = IntPtr.Zero;
+            try
+            {
+                ptr = Marshal.SecureStringToGlobalAllocUnicode(_password);
+                string plain = Marshal.PtrToStringUni(ptr) ?? string.Empty;
+                return action(plain);
+            }
+            finally
+            {
+                if (ptr != IntPtr.Zero)
+                    Marshal.ZeroFreeGlobalAllocUnicode(ptr);
+            }
+        }
+
+        #endregion
+
     }
 }
